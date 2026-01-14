@@ -208,12 +208,20 @@ export type SnowFormChildren<T extends FieldValues> = (helpers: SnowFormHelpers<
 // =============================================================================
 
 /**
+ * A Zod object schema, possibly wrapped in ZodEffects (refine, superRefine, transform)
+ */
+export type ZodObjectOrEffects =
+  | z.ZodObject<z.ZodRawShape>
+  | z.ZodEffects<z.ZodObject<z.ZodRawShape>>
+  | z.ZodEffects<z.ZodEffects<z.ZodObject<z.ZodRawShape>>>;
+
+/**
  * Props for the SnowForm component
  *
- * @typeParam TSchema - The Zod schema type
+ * @typeParam TSchema - The Zod schema type (supports refine/superRefine)
  * @typeParam TResponse - The response type from onSubmit
  */
-export interface SnowFormProps<TSchema extends z.ZodObject<z.ZodRawShape>, TResponse = unknown> {
+export interface SnowFormProps<TSchema extends ZodObjectOrEffects, TResponse = unknown> {
   /** Zod schema defining the form structure */
   schema: TSchema;
 

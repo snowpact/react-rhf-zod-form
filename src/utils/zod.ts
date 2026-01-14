@@ -80,15 +80,28 @@ function isEmailString(schema: z.ZodString): boolean {
 
 /**
  * Extract the shape (fields) from a Zod schema
+ * Supports schemas wrapped in ZodEffects (refine, superRefine, transform)
  */
-export function getZodShape(schema: z.ZodObject<z.ZodRawShape>): Record<string, z.ZodTypeAny> {
+export function getZodShape(schema: z.ZodTypeAny): Record<string, z.ZodTypeAny> {
   try {
+    // Unwrap ZodEffects (refine, superRefine, transform, etc.)
+    let current: z.ZodTypeAny = schema;
+    while (current instanceof z.ZodEffects) {
+      current = current._def.schema;
+    }
+
+    // Now we should have a ZodObject
+    if (!(current instanceof z.ZodObject)) {
+      console.error('[SnowForm] Schema must be a ZodObject (after unwrapping effects)');
+      return {};
+    }
+
     // Try shape() function first (for lazy schemas)
-    if (typeof schema._def.shape === 'function') {
-      return schema._def.shape();
+    if (typeof current._def.shape === 'function') {
+      return current._def.shape();
     }
     // Fallback to shape property
-    return schema.shape ?? {};
+    return current.shape ?? {};
   } catch (error) {
     console.error('[SnowForm] Error getting schema shape:', error);
     return {};
@@ -132,7 +145,8 @@ export function getZodFieldInfo(field: z.ZodTypeAny): SchemaFieldInfo {
 
 /**
  * Create a resolver for react-hook-form from a Zod schema
+ * Supports schemas with refine/superRefine (ZodEffects)
  */
-export function createZodResolver(schema: z.ZodObject<z.ZodRawShape>) {
+export function createZodResolver(schema: z.ZodTypeAny) {
   return zodResolver(schema);
 }

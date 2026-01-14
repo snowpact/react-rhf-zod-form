@@ -8,7 +8,7 @@ import { executeOnErrorBehavior } from './registry/behaviorRegistry';
 import { DefaultSubmitButton, getRegisteredSubmitButton } from './registry/componentRegistry';
 import { getFormUIStyles } from './registry/formUIRegistry';
 import { useSnowFormTranslation } from './registry/translationRegistry';
-import type { SchemaFieldInfo, SnowFormHelpers, SnowFormProps } from './types';
+import type { SchemaFieldInfo, SnowFormHelpers, SnowFormProps, ZodObjectOrEffects } from './types';
 import {
   applyEmptyValueOverrides,
   cn,
@@ -60,7 +60,7 @@ import {
  * </SnowForm>
  * ```
  */
-export function SnowForm<TSchema extends z.ZodObject<z.ZodRawShape>, TResponse = unknown>({
+export function SnowForm<TSchema extends ZodObjectOrEffects, TResponse = unknown>({
   schema,
   overrides = {},
   defaultValues: providedDefaultValues,

@@ -39,6 +39,7 @@ export type {
   RegisterableComponent,
   RegisteredComponent,
   RegisteredSubmitButton,
+  ZodObjectOrEffects,
 } from './types';
 
 export type { FormUIStyles, OnErrorBehavior } from './registry';
