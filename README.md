@@ -13,6 +13,7 @@ Automatic form generation from Zod schemas with react-hook-form.
 
 - **Zero runtime dependencies** - Only peer dependencies (React, Zod, RHF)
 - **Automatic field type detection** - Maps Zod types to form inputs
+- **Schema refinements** - Full support for `refine()` and `superRefine()` cross-field validation
 - **Extensible component registry** - Replace any component with your own
 - **Translation support** - i18next, next-intl, or any translation hook
 - **Children pattern** - Full control over layout when needed
@@ -31,7 +32,7 @@ yarn add @snowpact/react-rhf-zod-form
 ### Peer Dependencies
 
 ```bash
-npm install react react-dom react-hook-form zod @hookform/resolvers
+npm install react-hook-form zod @hookform/resolvers
 ```
 
 ## Quick Start
@@ -95,6 +96,41 @@ function MyForm() {
 | `color` | Color picker |
 | `hidden` | Hidden input |
 | *custom* | Any custom type you register |
+
+## Schema Refinements
+
+SnowForm fully supports Zod's `refine()` and `superRefine()` for cross-field validation:
+
+```tsx
+const schema = z
+  .object({
+    password: z.string().min(8, 'Password must be at least 8 characters'),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ['confirmPassword'],
+  });
+
+// Works with superRefine too
+const dateSchema = z
+  .object({
+    startDate: z.string(),
+    endDate: z.string(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.startDate > data.endDate) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'End date must be after start date',
+        path: ['endDate'],
+      });
+    }
+  });
+
+// Use directly - refinements are fully validated on submit
+<SnowForm schema={schema} onSubmit={handleSubmit} />
+```
 
 ## Overrides
 
