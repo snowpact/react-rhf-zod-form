@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { z } from 'zod';
 import { SnowForm, registerFormUIStyles, setOnErrorBehavior } from '../../src';
-import { ConfigPanel, SubmittedDataDisplay, type DemoConfig } from './components';
+import { CodePanel, ConfigPanel, SubmittedDataDisplay, type DemoConfig } from './components';
 
 // Register default styles for the demo
 registerFormUIStyles({
@@ -124,6 +124,11 @@ export function App() {
 
   return (
     <div className="min-h-screen flex">
+      {/* Code Panel - Left Side */}
+      <div className="w-96 flex-shrink-0 h-screen sticky top-0">
+        <CodePanel config={config} />
+      </div>
+
       {/* Main Content */}
       <div className="flex-1 bg-gray-50 p-8 overflow-y-auto">
         <div className="max-w-2xl mx-auto">
