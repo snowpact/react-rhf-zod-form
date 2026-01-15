@@ -37,15 +37,13 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "demo": "vite --config demo/vite.config.ts",
+    "demo:build": "vite build --config demo/vite.config.ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "prepublishOnly": "pnpm build",
-    "release": "./scripts/release.sh",
-    "release:patch": "./scripts/release.sh patch",
-    "release:minor": "./scripts/release.sh minor",
-    "release:major": "./scripts/release.sh major"
+    "prepublishOnly": "pnpm build"
   },
   "peerDependencies": {
     "@hookform/resolvers": ">=3.0.0",

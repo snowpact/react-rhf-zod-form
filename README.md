@@ -2,6 +2,8 @@
 
 Automatic form generation from Zod schemas with react-hook-form.
 
+**[Live Demo](https://snowpact.github.io/react-rhf-zod-form/)**
+
 ## Requirements
 
 - React >= 18.0.0
