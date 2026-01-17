@@ -1,6 +1,7 @@
 import type React from 'react';
 
 import type { RegisteredComponentProps } from '../types';
+import { cn } from '../utils';
 
 /**
  * Default checkbox component (HTML native)
@@ -27,7 +28,7 @@ export function DefaultCheckbox({
       onChange={handleChange}
       onBlur={onBlur}
       disabled={disabled}
-      className={className}
+      className={cn('snow-checkbox', className)}
       data-testid={`auto-form-checkbox-${name}`}
     />
   );

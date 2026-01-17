@@ -1,6 +1,7 @@
 import type React from 'react';
 
 import type { RegisteredComponentProps } from '../types';
+import { cn } from '../utils';
 
 /**
  * Default select component (HTML native)
@@ -15,6 +16,7 @@ export function DefaultSelect({
   placeholder,
   options,
   className,
+  error,
 }: RegisteredComponentProps<string>): React.ReactElement {
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newValue = e.target.value;
@@ -30,7 +32,7 @@ export function DefaultSelect({
       onChange={handleChange}
       onBlur={onBlur}
       disabled={disabled}
-      className={className}
+      className={cn('snow-select', error && 'snow-input-error', className)}
       data-testid={`auto-form-select-${name}`}
     >
       {placeholder && <option value="">{placeholder}</option>}

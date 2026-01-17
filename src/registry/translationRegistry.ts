@@ -1,65 +1,96 @@
-import type { TranslationFn, UseTranslationHook } from '../types';
-
 // =============================================================================
 // Translation Registry
 // =============================================================================
 
 /**
- * Default translation function - returns the key as-is
+ * Translation function type
  */
-const defaultTranslation: TranslationFn = (key: string) => key;
+export type TranslationFunction = (key: string) => string;
 
 /**
- * The registered translation hook
- * Default: returns a simple function that returns the key
+ * Default translations (English)
  */
-let useTranslationHook: UseTranslationHook = () => ({
-  t: defaultTranslation,
-});
+const defaultTranslations: Record<string, string> = {
+  'snowForm.submit': 'Submit',
+  'snowForm.submitting': 'Submitting...',
+  'snowForm.required': 'Required',
+  'snowForm.selectPlaceholder': 'Select...',
+};
+
+/**
+ * Custom translation function (set via setupSnowForm)
+ */
+let customTranslateFn: TranslationFunction | null = null;
+
+/**
+ * Translate a key using custom function or fallback to defaults
+ */
+const translate = (key: string): string => {
+  if (customTranslateFn) {
+    const result = customTranslateFn(key);
+    // If custom function returns the key unchanged, try defaults
+    if (result !== key) return result;
+  }
+  return defaultTranslations[key] ?? key;
+};
 
 // =============================================================================
 // Registration API
 // =============================================================================
 
 /**
- * Set the translation hook to use in SnowForm.
- * Use a namespace to have field keys at root level.
+ * Set the translation function.
+ * Called internally by setupSnowForm.
  *
- * @example Using i18next with a namespace (recommended)
+ * @param fn - Translation function (e.g., i18next t function)
+ *
+ * @example
  * ```typescript
- * import { setTranslationHook } from '@snowpact/react-rhf-zod-form';
  * import { useTranslation } from 'react-i18next';
  *
- * // Use 'data' namespace - translations in locales/fr/data.json
- * setTranslationHook(() => {
- *   const { t } = useTranslation('data');
- *   return { t };
- * });
- *
- * // Then in data.json:
- * // { "email": "Email", "password": "Mot de passe", "common.submit": "Envoyer" }
- * ```
- *
- * @example Using next-intl
- * ```typescript
- * import { useTranslations } from 'next-intl';
- *
- * setTranslationHook(() => {
- *   const t = useTranslations('data');
- *   return { t };
- * });
+ * const { t } = useTranslation('data');
+ * setTranslationFunction(t);
  * ```
  */
-export function setTranslationHook(hook: UseTranslationHook): void {
-  useTranslationHook = hook;
+export function setTranslationFunction(fn: TranslationFunction): void {
+  customTranslateFn = fn;
 }
 
 /**
- * Internal hook used by SnowForm to get translations
- * Uses the registered hook or falls back to returning keys
+ * Set custom translations to merge with defaults.
+ * Called internally by setupSnowForm.
+ *
+ * @param translations - Partial translations to merge
+ *
+ * @example
+ * ```typescript
+ * setTranslations({
+ *   'snowForm.submit': 'Envoyer',
+ *   'snowForm.submitting': 'Envoi en cours...',
+ * });
+ * ```
  */
-export function useSnowFormTranslation(): { t: TranslationFn } {
-  return useTranslationHook();
+export function setTranslations(translations: Partial<typeof defaultTranslations>): void {
+  Object.assign(defaultTranslations, translations);
+}
+
+/**
+ * Get the translate function.
+ * Used internally by SnowForm components.
+ *
+ * @returns The translate function
+ */
+export function getT(): TranslationFunction {
+  return translate;
+}
+
+/**
+ * Get all translation keys (useful for debugging)
+ *
+ * @returns Array of all translation keys
+ */
+export function getTranslationKeys(): string[] {
+  return Object.keys(defaultTranslations);
 }
 
 // =============================================================================
@@ -70,5 +101,15 @@ export function useSnowFormTranslation(): { t: TranslationFn } {
  * Reset translation registry to defaults (mainly for testing)
  */
 export function resetTranslationRegistry(): void {
-  useTranslationHook = () => ({ t: defaultTranslation });
+  customTranslateFn = null;
+  // Reset to original defaults
+  Object.keys(defaultTranslations).forEach(key => {
+    delete defaultTranslations[key];
+  });
+  Object.assign(defaultTranslations, {
+    'snowForm.submit': 'Submit',
+    'snowForm.submitting': 'Submitting...',
+    'snowForm.required': 'Required',
+    'snowForm.selectPlaceholder': 'Select...',
+  });
 }

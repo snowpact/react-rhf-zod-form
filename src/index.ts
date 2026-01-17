@@ -5,13 +5,33 @@
 export { SnowForm } from './SnowForm';
 
 // =============================================================================
-// Setup Functions
+// Setup Function (Primary API)
 // =============================================================================
 
-export { registerComponents, registerComponent, registerSubmitButton } from './registry/componentRegistry';
-export { setTranslationHook } from './registry/translationRegistry';
-export { setOnErrorBehavior } from './registry/behaviorRegistry';
-export { registerFormUIStyles } from './registry/formUIRegistry';
+export {
+  setupSnowForm,
+  resetSnowForm,
+  isSnowFormSetup,
+  type SetupSnowFormOptions,
+  type SnowFormTranslationKeys,
+} from './registry';
+
+// =============================================================================
+// Individual Registry Functions (Advanced Usage)
+// =============================================================================
+
+export {
+  // Components
+  registerComponents,
+  registerComponent,
+  registerSubmitButton,
+  // Translation
+  setTranslationFunction,
+  setTranslations,
+  getT,
+  // Behavior
+  setOnErrorBehavior,
+} from './registry';
 
 // =============================================================================
 // Utilities
@@ -24,22 +44,26 @@ export { normalizeDateToISO } from './utils';
 // =============================================================================
 
 export type {
+  // Main component types
   SnowFormProps,
   SnowFormHelpers,
+  // Component types
   RegisteredComponentProps,
   SubmitButtonProps,
+  // Field configuration
   FieldConfig,
   FieldOverride,
   FieldOption,
   FieldType,
+  // Schema types
   SchemaFieldInfo,
-  TranslationFn,
-  UseTranslationHook,
-  SnowFormConfig,
+  ZodObjectOrEffects,
+  // Component registration
   RegisterableComponent,
   RegisteredComponent,
   RegisteredSubmitButton,
-  ZodObjectOrEffects,
+  // Config types
+  SnowFormConfig,
 } from './types';
 
-export type { FormUIStyles, OnErrorBehavior } from './registry';
+export type { OnErrorBehavior, TranslationFunction } from './registry';

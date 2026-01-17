@@ -280,22 +280,9 @@ export interface SchemaFieldInfo {
 // =============================================================================
 
 /**
- * Translation function signature
- */
-export type TranslationFn = (key: string, options?: Record<string, unknown>) => string;
-
-/**
- * Hook that returns translation function
- */
-export type UseTranslationHook = () => { t: TranslationFn };
-
-/**
- * Global configuration options
+ * Global configuration options (legacy, kept for backwards compatibility)
  */
 export interface SnowFormConfig {
-  /** Translation hook (e.g., from i18next) */
-  useTranslation?: UseTranslationHook;
-
   /** Default CSS classes */
   defaultStyles?: {
     form?: string;

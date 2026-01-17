@@ -28,7 +28,8 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
-    }
+    },
+    "./styles.css": "./dist/styles.css"
   },
   "files": [
     "dist"
@@ -37,7 +38,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "demo": "vite --config demo/vite.config.ts",
+    "demo:dev": "vite --config demo/vite.config.ts",
     "demo:build": "vite build --config demo/vite.config.ts",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -61,7 +62,9 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^4.0.0",
+    "cssnano": "^7.0.0",
     "jsdom": "^25.0.0",
+    "postcss": "^8.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.54.0",

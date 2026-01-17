@@ -7,7 +7,7 @@ import { useEffect, type ReactNode } from 'react';
 import { SnowFormField } from '../SnowFormField';
 import { Form, FormField } from '../FormProvider';
 import { clearRegistry, registerComponent } from '../registry/componentRegistry';
-import { resetTranslationRegistry, setTranslationHook } from '../registry/translationRegistry';
+import { resetTranslationRegistry, setTranslationFunction } from '../registry/translationRegistry';
 import type { SchemaFieldInfo } from '../types';
 
 // =============================================================================
@@ -214,10 +214,8 @@ describe('SnowFormField', () => {
       expect(screen.getByText('Custom Label')).toBeInTheDocument();
     });
 
-    it('should use translation when hook is set', () => {
-      setTranslationHook(() => ({
-        t: (key: string) => `translated_${key}`,
-      }));
+    it('should use translation when function is set', () => {
+      setTranslationFunction((key: string) => `translated_${key}`);
 
       renderSnowFormField({ name: 'username' });
 

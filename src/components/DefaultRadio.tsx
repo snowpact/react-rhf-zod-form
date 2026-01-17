@@ -1,6 +1,7 @@
 import type React from 'react';
 
 import type { RegisteredComponentProps } from '../types';
+import { cn } from '../utils';
 
 /**
  * Default radio group component (HTML native)
@@ -20,9 +21,14 @@ export function DefaultRadio({
   };
 
   return (
-    <div role="radiogroup" aria-labelledby={name} className={className} data-testid={`auto-form-radio-${name}`}>
+    <div
+      role="radiogroup"
+      aria-labelledby={name}
+      className={cn('snow-radio-group', className)}
+      data-testid={`auto-form-radio-${name}`}
+    >
       {options?.map(option => (
-        <label key={option.value} className="inline-flex items-center gap-2 mr-4">
+        <label key={option.value} className="snow-radio-label">
           <input
             type="radio"
             name={name}
@@ -31,6 +37,7 @@ export function DefaultRadio({
             onChange={handleChange}
             onBlur={onBlur}
             disabled={disabled}
+            className="snow-radio"
           />
           <span>{option.label}</span>
         </label>

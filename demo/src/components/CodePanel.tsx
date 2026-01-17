@@ -1,7 +1,13 @@
 import { useState } from 'react';
 import type { DemoConfig } from './types';
 import { CodeHighlight } from './CodeHighlight';
-import { generateInstallCode, generateSetupCode, generateSchemaCode, generateSnowFormCode } from './codeGenerator';
+import {
+  generateInstallCode,
+  generateSetupCode,
+  generateCustomComponentsCode,
+  generateThemeCode,
+  generateFormCode,
+} from './codeGenerator';
 
 interface CodeSectionProps {
   title: string;
@@ -27,16 +33,14 @@ function CodeSection({ title, code, defaultOpen = true }: CodeSectionProps) {
         className="flex items-center justify-between px-3 py-2 bg-gray-800/50 sticky top-0 cursor-pointer hover:bg-gray-800"
       >
         <div className="flex items-center gap-1.5 text-xs font-medium text-gray-300">
-          <span className={`text-[10px] transition-transform ${isOpen ? 'rotate-90' : ''}`}>
-            ▶
-          </span>
+          <span className={`text-[10px] transition-transform ${isOpen ? 'rotate-90' : ''}`}>▶</span>
           {title}
         </div>
         <button
           onClick={handleCopy}
-          className="text-[10px] px-1.5 py-0.5 rounded bg-gray-700 hover:bg-gray-600 text-gray-400 transition-colors"
+          className="text-[10px] px-2 py-1 rounded bg-gray-700 hover:bg-gray-600 text-gray-300 transition-colors"
         >
-          {copied ? '✓' : 'Copy'}
+          {copied ? '✓ Copied' : 'Copy'}
         </button>
       </div>
       {isOpen && (
@@ -71,24 +75,11 @@ export function CodePanel({ config }: CodePanelProps) {
       </div>
 
       <div className="flex-1 overflow-y-auto divide-y divide-gray-800">
-        <CodeSection
-          title="0. Install dependencies"
-          code={generateInstallCode()}
-          defaultOpen={false}
-        />
-        <CodeSection
-          title="1. Setup (once per app)"
-          code={generateSetupCode()}
-          defaultOpen={false}
-        />
-        <CodeSection
-          title="2. Define your schema"
-          code={generateSchemaCode()}
-        />
-        <CodeSection
-          title="3. Use SnowForm"
-          code={generateSnowFormCode(config)}
-        />
+        <CodeSection title="0. Install dependencies" code={generateInstallCode()} defaultOpen={false} />
+        <CodeSection title="1a. Quick setup" code={generateSetupCode()} defaultOpen={false} />
+        <CodeSection title="1b. With custom components (optional)" code={generateCustomComponentsCode()} defaultOpen={false} />
+        <CodeSection title="2. Custom theme (optional)" code={generateThemeCode()} defaultOpen={false} />
+        <CodeSection title="3. Use SnowForm" code={generateFormCode(config)} />
         <DoneSection />
       </div>
     </div>

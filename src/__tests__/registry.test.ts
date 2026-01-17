@@ -2,7 +2,6 @@ import type { FieldErrors } from 'react-hook-form';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { executeOnErrorBehavior, resetBehaviorRegistry, setOnErrorBehavior } from '../registry/behaviorRegistry';
-import { getFormUIStyles, registerFormUIStyles, resetFormUIRegistry } from '../registry/formUIRegistry';
 import {
   clearRegistry,
   getRegisteredComponent,
@@ -10,7 +9,12 @@ import {
   registerComponent,
   registerSubmitButton,
 } from '../registry/componentRegistry';
-import { resetTranslationRegistry, setTranslationHook, useSnowFormTranslation } from '../registry/translationRegistry';
+import {
+  getT,
+  resetTranslationRegistry,
+  setTranslationFunction,
+  setTranslations,
+} from '../registry/translationRegistry';
 
 // =============================================================================
 // Behavior Registry Tests
@@ -47,54 +51,6 @@ describe('behaviorRegistry', () => {
     executeOnErrorBehavior(null, {});
 
     expect(callback).not.toHaveBeenCalled();
-  });
-});
-
-// =============================================================================
-// Form UI Registry Tests
-// =============================================================================
-
-describe('formUIRegistry', () => {
-  beforeEach(() => {
-    resetFormUIRegistry();
-  });
-
-  it('should register and retrieve form UI styles', () => {
-    registerFormUIStyles({
-      form: 'form-class',
-      formItem: 'form-item-class',
-      formLabel: 'label-class',
-    });
-
-    const styles = getFormUIStyles();
-
-    expect(styles.form).toBe('form-class');
-    expect(styles.formItem).toBe('form-item-class');
-    expect(styles.formLabel).toBe('label-class');
-  });
-
-  it('should merge styles when registering multiple times', () => {
-    registerFormUIStyles({ form: 'form-1', formItem: 'item-1' });
-    registerFormUIStyles({ form: 'form-2', formLabel: 'label-2' });
-
-    const styles = getFormUIStyles();
-
-    expect(styles.form).toBe('form-2'); // Overwritten
-    expect(styles.formItem).toBe('item-1'); // Kept
-    expect(styles.formLabel).toBe('label-2'); // Added
-  });
-
-  it('should return empty object when no styles registered', () => {
-    const styles = getFormUIStyles();
-    expect(styles).toEqual({});
-  });
-
-  it('should reset styles', () => {
-    registerFormUIStyles({ form: 'some-class' });
-    resetFormUIRegistry();
-
-    const styles = getFormUIStyles();
-    expect(styles).toEqual({});
   });
 });
 
@@ -156,31 +112,69 @@ describe('translationRegistry', () => {
     resetTranslationRegistry();
   });
 
-  it('should use registered translation hook', () => {
+  it('should use registered translation function', () => {
     const mockT = vi.fn((key: string) => `translated_${key}`);
-    setTranslationHook(() => ({ t: mockT }));
+    setTranslationFunction(mockT);
 
-    const { t } = useSnowFormTranslation();
+    const t = getT();
     const result = t('email');
 
     expect(result).toBe('translated_email');
     expect(mockT).toHaveBeenCalledWith('email');
   });
 
-  it('should use default translation (return key as-is) when no hook registered', () => {
-    const { t } = useSnowFormTranslation();
+  it('should use default translation (return key as-is) when no function registered', () => {
+    const t = getT();
 
     expect(t('email')).toBe('email');
     expect(t('firstName')).toBe('firstName');
-    expect(t('submit')).toBe('submit');
+  });
+
+  it('should return default translations for known keys', () => {
+    const t = getT();
+
+    expect(t('snowForm.submit')).toBe('Submit');
+    expect(t('snowForm.submitting')).toBe('Submitting...');
+    expect(t('snowForm.required')).toBe('Required');
+    expect(t('snowForm.selectPlaceholder')).toBe('Select...');
+  });
+
+  it('should allow setting custom translations', () => {
+    setTranslations({
+      'snowForm.submit': 'Envoyer',
+      'snowForm.submitting': 'Envoi en cours...',
+    });
+
+    const t = getT();
+
+    expect(t('snowForm.submit')).toBe('Envoyer');
+    expect(t('snowForm.submitting')).toBe('Envoi en cours...');
+    // Other defaults should remain
+    expect(t('snowForm.required')).toBe('Required');
   });
 
   it('should reset translation registry', () => {
-    const mockT = vi.fn(() => 'custom');
-    setTranslationHook(() => ({ t: mockT }));
+    setTranslations({ 'snowForm.submit': 'Custom' });
     resetTranslationRegistry();
 
-    const { t } = useSnowFormTranslation();
-    expect(t('email')).toBe('email'); // Back to default (key as-is)
+    const t = getT();
+    expect(t('snowForm.submit')).toBe('Submit'); // Back to default
+  });
+
+  it('should prefer custom translation function over defaults', () => {
+    setTranslationFunction((key: string) => {
+      if (key === 'snowForm.submit') return 'Send';
+      return key;
+    });
+
+    const t = getT();
+    expect(t('snowForm.submit')).toBe('Send');
+  });
+
+  it('should fallback to defaults when custom function returns the key unchanged', () => {
+    setTranslationFunction((key: string) => key);
+
+    const t = getT();
+    expect(t('snowForm.submit')).toBe('Submit'); // Falls back to default
   });
 });

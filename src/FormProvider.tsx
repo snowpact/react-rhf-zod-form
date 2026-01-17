@@ -8,7 +8,6 @@ import {
   type Path,
 } from 'react-hook-form';
 
-import { getFormUIStyles } from './registry/formUIRegistry';
 import { cn } from './utils';
 
 // =============================================================================
@@ -91,8 +90,7 @@ interface FormItemProps {
  * Wrapper for a form field (container for label + input + error)
  */
 export function FormItem({ children, className }: FormItemProps): React.ReactElement {
-  const styles = getFormUIStyles();
-  return <div className={cn(styles.formItem, className)}>{children}</div>;
+  return <div className={cn('snow-form-item', className)}>{children}</div>;
 }
 
 interface FormLabelProps {
@@ -106,10 +104,9 @@ interface FormLabelProps {
  */
 export function FormLabel({ children, className, required }: FormLabelProps): React.ReactElement {
   const { id, invalid } = useFormField();
-  const styles = getFormUIStyles();
 
   return (
-    <label htmlFor={id} className={cn(styles.formLabel, invalid && styles.formLabelError, className)}>
+    <label htmlFor={id} className={cn('snow-form-label', invalid && 'snow-form-label-error', className)}>
       {children}
       {required && <span aria-hidden="true"> *</span>}
     </label>
@@ -138,8 +135,7 @@ interface FormDescriptionProps {
  * Help text below a form field
  */
 export function FormDescription({ children, className }: FormDescriptionProps): React.ReactElement {
-  const styles = getFormUIStyles();
-  return <p className={cn(styles.formDescription, className)}>{children}</p>;
+  return <p className={cn('snow-form-description', className)}>{children}</p>;
 }
 
 interface FormMessageProps {
@@ -153,13 +149,12 @@ interface FormMessageProps {
  */
 export function FormMessage({ className, children }: FormMessageProps): React.ReactElement | null {
   const { error } = useFormField();
-  const styles = getFormUIStyles();
   const message = error?.message ?? children;
 
   if (!message) return null;
 
   return (
-    <p className={cn(styles.formMessage, className)} role="alert">
+    <p className={cn('snow-form-message', className)} role="alert">
       {message}
     </p>
   );

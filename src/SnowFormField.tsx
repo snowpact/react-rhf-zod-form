@@ -12,7 +12,7 @@ import {
 } from './components';
 import { FormControl, FormDescription, FormItem, FormLabel, FormMessage, useFormField } from './FormProvider';
 import { getRegisteredComponent } from './registry/componentRegistry';
-import { useSnowFormTranslation } from './registry/translationRegistry';
+import { getT } from './registry/translationRegistry';
 import type { FieldConfig, FieldType, RegisterableComponent, RegisteredComponentProps, SchemaFieldInfo } from './types';
 import { resolveFieldType } from './utils';
 
@@ -110,7 +110,7 @@ export function SnowFormField<
   formDisabled,
   styles,
 }: SnowFormFieldProps<TFieldValues, TName>): React.ReactElement | null {
-  const { t } = useSnowFormTranslation();
+  const t = getT();
   const { error } = useFormField();
   const fieldType = resolveFieldType(fieldInfo, override);
 

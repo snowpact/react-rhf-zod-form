@@ -1,6 +1,7 @@
 import type React from 'react';
 
 import type { RegisteredComponentProps } from '../types';
+import { cn } from '../utils';
 
 interface NumberInputComponentProps {
   min?: number;
@@ -22,6 +23,7 @@ export function DefaultNumberInput({
   placeholder,
   className,
   componentProps,
+  error,
 }: RegisteredComponentProps<number | null>): React.ReactElement {
   const { min, max, step } = (componentProps ?? {}) as NumberInputComponentProps;
 
@@ -45,7 +47,7 @@ export function DefaultNumberInput({
       onBlur={onBlur}
       disabled={disabled}
       placeholder={placeholder}
-      className={className}
+      className={cn('snow-input', error && 'snow-input-error', className)}
       min={min}
       max={max}
       step={step}

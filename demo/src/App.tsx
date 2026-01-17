@@ -1,25 +1,19 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { z } from 'zod';
-import { SnowForm, registerFormUIStyles, setOnErrorBehavior } from '../../src';
-import { CodePanel, ConfigPanel, SubmittedDataDisplay, type DemoConfig } from './components';
+import { SnowForm, setupSnowForm } from '../../src';
+import '../../src/styles/index.css';
+import { CodePanel, ConfigPanel, SubmittedDataDisplay, type DemoConfig, themes } from './components';
 
-// Register default styles for the demo
-registerFormUIStyles({
-  form: 'space-y-4',
-  formItem: 'grid gap-2',
-  formLabel: 'text-sm font-medium text-gray-700',
-  formLabelError: 'text-red-500',
-  formDescription: 'text-sm text-gray-500',
-  formMessage: 'text-sm text-red-500',
-});
-
-// Scroll to first error on validation failure
-setOnErrorBehavior((formRef, errors) => {
-  const firstErrorField = Object.keys(errors)[0];
-  if (firstErrorField) {
-    const element = formRef?.querySelector(`[name="${firstErrorField}"]`);
-    element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }
+// Initialize SnowForm with the new API
+setupSnowForm({
+  translate: key => key,
+  onError: (formRef, errors) => {
+    const firstErrorField = Object.keys(errors)[0];
+    if (firstErrorField) {
+      const element = formRef?.querySelector(`[name="${firstErrorField}"]`);
+      element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  },
 });
 
 // Complete schema showcasing all field types
@@ -35,21 +29,8 @@ const schema = z.object({
   bio: z.string().optional(),
   // Select (enum)
   role: z.enum(['admin', 'user', 'guest']),
-  // Radio
-  gender: z.enum(['male', 'female', 'other', 'prefer-not-to-say']),
   // Checkbox
   acceptTerms: z.boolean().refine(val => val === true, 'You must accept the terms'),
-  // Date/Time inputs
-  birthDate: z.string().date().optional(),
-  appointmentTime: z.string().optional(),
-  eventDateTime: z.string().optional(),
-  // Contact inputs
-  phone: z.string().optional(),
-  website: z.string().url().optional().or(z.literal('')),
-  // Other inputs
-  favoriteColor: z.string().optional(),
-  profilePicture: z.string().optional(),
-  secretCode: z.string().optional(),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -65,12 +46,6 @@ const fetchUserData = async (): Promise<Partial<FormData>> => {
     age: 28,
     bio: 'Software developer passionate about open source.',
     role: 'admin',
-    gender: 'female',
-    birthDate: '1996-03-15',
-    appointmentTime: '14:30',
-    phone: '+1 555 987 6543',
-    website: 'https://janesmith.dev',
-    favoriteColor: '#8b5cf6',
   };
 };
 
@@ -79,11 +54,27 @@ export function App() {
   const [formKey, setFormKey] = useState(0);
   const [asyncData, setAsyncData] = useState<Partial<FormData> | null>(null);
   const [isLoadingAsync, setIsLoadingAsync] = useState(false);
+  const [currentTheme, setCurrentTheme] = useState('default');
   const [config, setConfig] = useState<DemoConfig>({
-    simulateEndpointError: false,
+    renderMode: 'auto',
     simulateSlowSubmission: false,
+    simulateEndpointError: false,
     showDebugMode: true,
   });
+
+  // Apply theme CSS variables
+  useEffect(() => {
+    const theme = themes[currentTheme];
+    const root = document.documentElement;
+    root.style.setProperty('--snow-background', theme.background);
+    root.style.setProperty('--snow-foreground', theme.foreground);
+    root.style.setProperty('--snow-secondary', theme.secondary);
+    root.style.setProperty('--snow-placeholder', theme.placeholder);
+    root.style.setProperty('--snow-border', theme.border);
+    root.style.setProperty('--snow-ring', theme.ring);
+    root.style.setProperty('--snow-error', theme.error);
+    root.style.setProperty('--snow-radius', theme.radius);
+  }, [currentTheme]);
 
   const handleSubmit = async (data: FormData) => {
     if (config.simulateSlowSubmission) {
@@ -110,8 +101,8 @@ export function App() {
     }
   };
 
-  const toggleConfig = (key: keyof DemoConfig) => {
-    setConfig(prev => ({ ...prev, [key]: !prev[key] }));
+  const handleConfigChange = <K extends keyof DemoConfig>(key: K, value: DemoConfig[K]) => {
+    setConfig(prev => ({ ...prev, [key]: value }));
   };
 
   const handleFillAsync = async () => {
@@ -120,6 +111,80 @@ export function App() {
     setAsyncData(data);
     setFormKey(prev => prev + 1);
     setIsLoadingAsync(false);
+  };
+
+  const renderForm = () => {
+    const commonProps = {
+      key: formKey,
+      debug: config.showDebugMode,
+      schema,
+      defaultValues: asyncData ?? { firstName: '' },
+      onSubmit: handleSubmit,
+      onSubmitError: handleSubmitError,
+      onSuccess: () => alert('Form submitted successfully!'),
+      overrides: {
+        firstName: { label: 'First Name', placeholder: 'John' },
+        lastName: { label: 'Last Name', placeholder: 'Doe' },
+        email: {
+          label: 'Email Address',
+          type: 'email' as const,
+          placeholder: 'john@example.com',
+          description: 'We will never share your email',
+        },
+        password: {
+          label: 'Password',
+          type: 'password' as const,
+          placeholder: '••••••••',
+          description: 'Must be at least 8 characters',
+        },
+        age: { label: 'Age', description: 'Must be 18 or older' },
+        bio: {
+          label: 'Biography',
+          type: 'textarea' as const,
+          placeholder: 'Tell us about yourself...',
+          description: 'Optional',
+        },
+        role: {
+          label: 'Role',
+          type: 'select' as const,
+          options: [
+            { value: 'admin', label: 'Administrator' },
+            { value: 'user', label: 'Regular User' },
+            { value: 'guest', label: 'Guest' },
+          ],
+        },
+        acceptTerms: {
+          label: 'I accept the terms and conditions',
+          type: 'checkbox' as const,
+        },
+      },
+    };
+
+    if (config.renderMode === 'children') {
+      return (
+        <SnowForm {...commonProps}>
+          {({ renderField, renderSubmitButton }) => (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>{renderField('firstName')}</div>
+                <div>{renderField('lastName')}</div>
+              </div>
+              {renderField('email')}
+              {renderField('password')}
+              <div className="grid grid-cols-2 gap-4">
+                <div>{renderField('age')}</div>
+                <div>{renderField('role')}</div>
+              </div>
+              {renderField('bio')}
+              {renderField('acceptTerms')}
+              <div className="pt-4">{renderSubmitButton({ children: 'Create Account' })}</div>
+            </div>
+          )}
+        </SnowForm>
+      );
+    }
+
+    return <SnowForm {...commonProps} />;
   };
 
   return (
@@ -133,122 +198,15 @@ export function App() {
       <div className="flex-1 bg-gray-50 p-8 overflow-y-auto">
         <div className="max-w-2xl mx-auto">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">@snowpact/react-rhf-zod-form</h1>
-          <p className="text-gray-600 mb-8">All available field types demo</p>
+          <p className="text-gray-600 mb-8">
+            Automatic form generation from Zod schemas with react-hook-form
+          </p>
 
-          <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-            <SnowForm
-              key={formKey}
-              debug={config.showDebugMode}
-              schema={schema}
-              defaultValues={asyncData ?? { firstName: 'test' }}
-              onSubmit={handleSubmit}
-              onSubmitError={handleSubmitError}
-              onSuccess={() => alert('Form submitted successfully!')}
-              overrides={{
-                firstName: { label: 'First Name', placeholder: 'John' },
-                lastName: { label: 'Last Name', placeholder: 'Doe' },
-                email: {
-                  label: 'Email Address',
-                  type: 'email',
-                  placeholder: 'john@example.com',
-                  description: 'We will never share your email',
-                },
-                password: {
-                  label: 'Password',
-                  type: 'password',
-                  placeholder: '••••••••',
-                  description: 'Must be at least 8 characters',
-                },
-                age: { label: 'Age', description: 'Must be 18 or older' },
-                bio: {
-                  label: 'Biography',
-                  type: 'textarea',
-                  placeholder: 'Tell us about yourself...',
-                  description: 'Optional',
-                },
-                role: {
-                  label: 'Role',
-                  type: 'select',
-                  options: [
-                    { value: 'admin', label: 'Administrator' },
-                    { value: 'user', label: 'Regular User' },
-                    { value: 'guest', label: 'Guest' },
-                  ],
-                },
-                gender: {
-                  label: 'Gender',
-                  type: 'radio',
-                  render: ({ value, onChange }) => (
-                    <div className="flex flex-col gap-2">
-                      {[
-                        { value: 'male', label: 'Male' },
-                        { value: 'female', label: 'Female' },
-                        { value: 'other', label: 'Other' },
-                        { value: 'prefer-not-to-say', label: 'Prefer not to say' },
-                      ].map(option => (
-                        <label key={option.value} className="flex items-center gap-2 cursor-pointer">
-                          <input
-                            type="radio"
-                            name="gender"
-                            value={option.value}
-                            checked={value === option.value}
-                            onChange={e => onChange(e.target.value)}
-                            className="w-4 h-4 text-blue-600"
-                          />
-                          <span className="text-sm">{option.label}</span>
-                        </label>
-                      ))}
-                    </div>
-                  ),
-                },
-                acceptTerms: {
-                  label: 'I accept the terms and conditions',
-                  type: 'checkbox',
-                },
-                birthDate: { label: 'Birth Date', type: 'date' },
-                appointmentTime: {
-                  label: 'Preferred Time',
-                  type: 'time',
-                  description: 'Select your preferred appointment time',
-                },
-                eventDateTime: {
-                  label: 'Event Date & Time',
-                  type: 'datetime-local',
-                },
-                phone: {
-                  label: 'Phone Number',
-                  type: 'tel',
-                  placeholder: '+1 (555) 123-4567',
-                },
-                website: {
-                  label: 'Website',
-                  type: 'url',
-                  placeholder: 'https://example.com',
-                  emptyAsUndefined: true,
-                },
-                favoriteColor: {
-                  label: 'Favorite Color',
-                  description: 'Pick your favorite color',
-                  render: ({ value, onChange }) => (
-                    <div className="flex items-center gap-3">
-                      <input
-                        type="color"
-                        value={value || '#3b82f6'}
-                        onChange={e => onChange(e.target.value)}
-                        className="w-12 h-10 rounded cursor-pointer border-0 p-0"
-                      />
-                      <span className="text-sm text-gray-600 font-mono">{value || '#3b82f6'}</span>
-                    </div>
-                  ),
-                },
-                profilePicture: {
-                  label: 'Profile Picture',
-                  type: 'file',
-                  description: 'Upload a profile picture (JPG, PNG)',
-                },
-                secretCode: { label: 'Secret Code', type: 'hidden' },
-              }}
-            />
+          <div
+            className="rounded-lg shadow-md p-6 mb-8"
+            style={{ backgroundColor: 'var(--snow-background)', color: 'var(--snow-foreground)' }}
+          >
+            {renderForm()}
           </div>
 
           <SubmittedDataDisplay data={submittedData} />
@@ -259,9 +217,11 @@ export function App() {
       <div className="w-72 flex-shrink-0 h-screen sticky top-0">
         <ConfigPanel
           config={config}
-          onToggle={toggleConfig}
+          onConfigChange={handleConfigChange}
           onFillAsync={handleFillAsync}
           isLoadingAsync={isLoadingAsync}
+          currentTheme={currentTheme}
+          onThemeChange={setCurrentTheme}
         />
       </div>
     </div>

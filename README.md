@@ -8,7 +8,7 @@ Automatic form generation from Zod schemas with react-hook-form.
 
 - React >= 18.0.0
 - react-hook-form >= 7.0.0
-- zod >= 3.24.0
+- zod >= 4.0.0
 - @hookform/resolvers >= 3.0.0
 
 ## Features
@@ -17,7 +17,8 @@ Automatic form generation from Zod schemas with react-hook-form.
 - **Automatic field type detection** - Maps Zod types to form inputs
 - **Schema refinements** - Full support for `refine()` and `superRefine()` cross-field validation
 - **Extensible component registry** - Replace any component with your own
-- **Translation support** - i18next, next-intl, or any translation hook
+- **Translation support** - i18next, next-intl, or any translation function
+- **CSS Variables** - Easy theming with `--snow-*` CSS variables
 - **Children pattern** - Full control over layout when needed
 - **TypeScript first** - Full type inference from Zod schemas
 
@@ -38,6 +39,87 @@ npm install react-hook-form zod @hookform/resolvers
 ```
 
 ## Quick Start
+
+### 1a. Quick setup
+
+```tsx
+// Run once at app startup (e.g., app/setup.ts, _app.tsx, main.tsx)
+import { setupSnowForm } from '@snowpact/react-rhf-zod-form';
+import '@snowpact/react-rhf-zod-form/styles.css';
+
+setupSnowForm({
+  // Translation function (i18next.t, next-intl t, or identity)
+  translate: (key) => key,
+
+  // Custom translations (optional)
+  translations: {
+    'snowForm.submit': 'Submit',
+    'snowForm.submitting': 'Submitting...',
+    'snowForm.required': 'Required',
+    'snowForm.selectPlaceholder': 'Select...',
+  },
+
+  // Scroll to first error on validation failure (optional)
+  onError: (formRef, errors) => {
+    const firstErrorField = Object.keys(errors)[0];
+    if (firstErrorField) {
+      const element = formRef?.querySelector(`[name="${firstErrorField}"]`);
+      element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  },
+});
+```
+
+### 1b. With custom components (optional)
+
+```tsx
+// Run once at app startup (e.g., app/setup.ts, _app.tsx, main.tsx)
+import { setupSnowForm } from '@snowpact/react-rhf-zod-form';
+import '@snowpact/react-rhf-zod-form/styles.css';
+import { Input, Select, Button, Spinner } from '@/components/ui';
+import { cn } from '@/lib/utils';
+
+setupSnowForm({
+  translate: (key) => key,
+
+  // Register custom UI components globally
+  components: {
+    text: ({ value, onChange, placeholder, disabled, error, className }) => (
+      <Input
+        value={value ?? ''}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        disabled={disabled}
+        className={cn(className, error && 'border-red-500')}
+      />
+    ),
+    select: ({ value, onChange, options, placeholder, disabled }) => (
+      <Select value={value} onValueChange={onChange} disabled={disabled}>
+        {placeholder && <Select.Item value="">{placeholder}</Select.Item>}
+        {options?.map((opt) => (
+          <Select.Item key={opt.value} value={opt.value}>
+            {opt.label}
+          </Select.Item>
+        ))}
+      </Select>
+    ),
+  },
+
+  // Custom submit button
+  submitButton: ({ loading, disabled, children, className }) => (
+    <Button type="submit" disabled={disabled || loading} className={className}>
+      {loading ? <Spinner className="mr-2" /> : null}
+      {children}
+    </Button>
+  ),
+
+  onError: (formRef) => {
+    formRef?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  },
+});
+```
+
+### 2. Use SnowForm
 
 ```tsx
 import { SnowForm } from '@snowpact/react-rhf-zod-form';
@@ -98,6 +180,121 @@ function MyForm() {
 | `color` | Color picker |
 | `hidden` | Hidden input |
 | *custom* | Any custom type you register |
+
+## Setup API
+
+### setupSnowForm()
+
+Initialize SnowForm once at app startup:
+
+```tsx
+import { setupSnowForm } from '@snowpact/react-rhf-zod-form';
+import '@snowpact/react-rhf-zod-form/styles.css';
+
+setupSnowForm({
+  // Required: Translation function
+  translate: (key) => key,
+
+  // Optional: Custom translations
+  translations: {
+    'snowForm.submit': 'Submit',
+    'snowForm.submitting': 'Submitting...',
+    'snowForm.required': 'Required',
+    'snowForm.selectPlaceholder': 'Select...',
+  },
+
+  // Optional: Custom components
+  components: {
+    text: MyInput,
+    select: MySelect,
+  },
+
+  // Optional: Custom submit button
+  submitButton: MyButton,
+
+  // Optional: Error behavior
+  onError: (formRef, errors) => {
+    formRef?.scrollIntoView({ behavior: 'smooth' });
+  },
+});
+```
+
+### With i18next
+
+```tsx
+import { setupSnowForm } from '@snowpact/react-rhf-zod-form';
+import i18next from 'i18next';
+
+setupSnowForm({
+  translate: i18next.t.bind(i18next),
+});
+```
+
+### With next-intl
+
+```tsx
+import { setupSnowForm } from '@snowpact/react-rhf-zod-form';
+import { useTranslations } from 'next-intl';
+
+// In a client component
+function SetupProvider({ children }) {
+  const t = useTranslations('form');
+
+  useEffect(() => {
+    setupSnowForm({ translate: t });
+  }, [t]);
+
+  return children;
+}
+```
+
+## CSS Variables
+
+The default styles use CSS variables for easy customization:
+
+```css
+:root {
+  --snow-background: #ffffff;
+  --snow-foreground: #0a0a0a;
+  --snow-secondary: #f5f5f5;
+  --snow-placeholder: #9ca3af;
+  --snow-border: #e5e5e5;
+  --snow-ring: #3b82f6;
+  --snow-radius: 0.375rem;
+  --snow-error: #ef4444;
+}
+
+/* Dark mode */
+.dark {
+  --snow-background: #1a1a2e;
+  --snow-foreground: #eaeaea;
+  --snow-secondary: #16213e;
+  --snow-placeholder: #6b7280;
+  --snow-border: #0f3460;
+  --snow-ring: #3b82f6;
+  --snow-error: #f87171;
+}
+```
+
+### CSS Classes
+
+The library uses semantic class names:
+
+| Class | Description |
+|-------|-------------|
+| `.snow-form` | Form container |
+| `.snow-form-item` | Field wrapper |
+| `.snow-form-label` | Field label |
+| `.snow-form-label-error` | Label with error |
+| `.snow-form-description` | Help text |
+| `.snow-form-message` | Error message |
+| `.snow-input` | Input fields |
+| `.snow-textarea` | Textarea |
+| `.snow-select` | Select dropdown |
+| `.snow-checkbox` | Checkbox |
+| `.snow-radio` | Radio buttons |
+| `.snow-btn` | Buttons |
+| `.snow-btn-primary` | Primary button |
 
 ## Schema Refinements
 
@@ -238,51 +435,51 @@ For full layout control, use the children render pattern:
 
 ## Custom Components
 
-Register your own components to replace the defaults.
-
-> **Full Example**: See [`examples/full-setup.md`](./examples/full-setup.md) for a complete Shadcn/UI setup with i18next translations, custom components, and error handling.
+Register your own components via `setupSnowForm()` or the individual registration functions.
 
 ```tsx
-import { registerComponents, registerSubmitButton } from '@snowpact/react-rhf-zod-form';
+import { setupSnowForm } from '@snowpact/react-rhf-zod-form';
 import { Input, Button, Select } from '@/components/ui';
 
-// Register multiple components at once
-registerComponents({
-  text: ({ value, onChange, placeholder, disabled, className }) => (
-    <Input
-      value={value ?? ''}
-      onChange={(e) => onChange(e.target.value)}
-      placeholder={placeholder}
-      disabled={disabled}
+setupSnowForm({
+  translate: (key) => key,
+
+  components: {
+    text: ({ value, onChange, placeholder, disabled, className }) => (
+      <Input
+        value={value ?? ''}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        disabled={disabled}
+        className={className}
+      />
+    ),
+    select: ({ value, onChange, options, placeholder, disabled }) => (
+      <Select
+        value={value}
+        onValueChange={onChange}
+        disabled={disabled}
+      >
+        {placeholder && <Select.Item value="">{placeholder}</Select.Item>}
+        {options?.map((opt) => (
+          <Select.Item key={opt.value} value={opt.value}>
+            {opt.label}
+          </Select.Item>
+        ))}
+      </Select>
+    ),
+  },
+
+  submitButton: ({ loading, disabled, children, className }) => (
+    <Button
+      type="submit"
+      disabled={disabled || loading}
       className={className}
-    />
-  ),
-  select: ({ value, onChange, options, placeholder, disabled }) => (
-    <Select
-      value={value}
-      onValueChange={onChange}
-      disabled={disabled}
     >
-      {placeholder && <Select.Item value="">{placeholder}</Select.Item>}
-      {options?.map((opt) => (
-        <Select.Item key={opt.value} value={opt.value}>
-          {opt.label}
-        </Select.Item>
-      ))}
-    </Select>
+      {loading ? <Spinner /> : children}
+    </Button>
   ),
 });
-
-// Register custom submit button
-registerSubmitButton(({ loading, disabled, children, className }) => (
-  <Button
-    type="submit"
-    disabled={disabled || loading}
-    className={className}
-  >
-    {loading ? <Spinner /> : children}
-  </Button>
-));
 ```
 
 ## API Reference
@@ -309,12 +506,14 @@ interface SnowFormProps<TSchema, TResponse = unknown> {
 
 | Function | Description |
 |----------|-------------|
+| `setupSnowForm(options)` | Initialize SnowForm (call once at app startup) |
+| `resetSnowForm()` | Reset all registries (mainly for testing) |
 | `registerComponents(map)` | Register multiple components |
 | `registerComponent(type, component)` | Register single component |
 | `registerSubmitButton(component)` | Register submit button |
-| `setTranslationHook(hook)` | Set translation hook |
+| `setTranslationFunction(fn)` | Set translation function |
+| `setTranslations(map)` | Set custom translations |
 | `setOnErrorBehavior(callback)` | Set error behavior |
-| `registerFormUIStyles(styles)` | Set default CSS classes |
 | `normalizeDateToISO(date)` | Convert date to ISO string |
 
 ### Exported Types
@@ -327,122 +526,70 @@ import type {
   SubmitButtonProps,
   FieldConfig,
   FieldOption,
-  FormUIStyles,
   FieldType,
+  SetupSnowFormOptions,
+  TranslationFunction,
+  OnErrorBehavior,
 } from '@snowpact/react-rhf-zod-form';
 ```
 
-## Advanced Configuration
+## Migration from v1.x
 
-### Translations
+Version 2.0 introduces a unified setup API. Here's how to migrate:
 
-#### With i18next
+### Before (v1.x)
 
 ```tsx
-import { setTranslationHook } from '@snowpact/react-rhf-zod-form';
-import { useTranslation } from 'react-i18next';
+import {
+  setTranslationHook,
+  registerFormUIStyles,
+  setOnErrorBehavior,
+  registerComponents,
+} from '@snowpact/react-rhf-zod-form';
 
 setTranslationHook(() => {
   const { t } = useTranslation('form');
   return { t };
 });
 
-// locales/en/form.json
-{
-  "email": "Email Address",
-  "password": "Password",
-  "submit": "Submit"
-}
-```
-
-### Styling
-
-Register default CSS classes for form layout:
-
-```tsx
-import { registerFormUIStyles } from '@snowpact/react-rhf-zod-form';
-
 registerFormUIStyles({
   form: 'space-y-4',
   formItem: 'grid gap-2',
-  formLabel: 'text-sm font-medium',
-  formLabelError: 'text-red-500',
-  formDescription: 'text-sm text-gray-500',
-  formMessage: 'text-sm text-red-500',
-  submitButton: 'w-full bg-primary text-white py-2 rounded',
-  input: 'w-full border rounded px-3 py-2',
+  // ...
 });
+
+setOnErrorBehavior((formRef) => {
+  formRef?.scrollIntoView({ behavior: 'smooth' });
+});
+
+registerComponents({ text: MyInput });
 ```
 
-> **Tailwind tip**: For polished inputs similar to shadcn/ui:
-> ```tsx
-> input: 'flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm',
-> ```
-
-### Error Behavior
-
-Register a global callback for form validation errors:
+### After (v2.0)
 
 ```tsx
-import { setOnErrorBehavior } from '@snowpact/react-rhf-zod-form';
+import { setupSnowForm } from '@snowpact/react-rhf-zod-form';
+import '@snowpact/react-rhf-zod-form/styles.css';
 
-setOnErrorBehavior((formRef, errors) => {
-  // Scroll to form on error
-  formRef?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+setupSnowForm({
+  translate: i18next.t.bind(i18next), // Function instead of hook
 
-  // Or show a toast
-  toast.error('Please fix the form errors');
+  components: {
+    text: MyInput,
+  },
+
+  onError: (formRef) => {
+    formRef?.scrollIntoView({ behavior: 'smooth' });
+  },
 });
 ```
 
-### Custom Field Types
+### Breaking Changes
 
-Extend the type system with declaration merging:
-
-```typescript
-// types/snow-form.d.ts
-declare global {
-  interface SnowFormCustomTypes {
-    'rich-text': true;
-    'color-picker': true;
-  }
-}
-export {};
-```
-
-Then register your components with the full props:
-
-```tsx
-import { registerComponents } from '@snowpact/react-rhf-zod-form';
-
-registerComponents({
-  'rich-text': ({ value, onChange, onBlur, placeholder, disabled, className }) => (
-    <RichTextEditor
-      value={value ?? ''}
-      onChange={(html) => onChange(html)}
-      onBlur={onBlur}
-      placeholder={placeholder}
-      readOnly={disabled}
-      className={className}
-    />
-  ),
-  'color-picker': ({ value, onChange }) => (
-    <ColorPicker
-      color={value ?? '#000000'}
-      onColorChange={(color) => onChange(color)}
-    />
-  ),
-});
-
-// Now TypeScript allows the type in overrides
-<SnowForm
-  schema={schema}
-  overrides={{
-    content: { type: 'rich-text' },
-    theme: { type: 'color-picker' },
-  }}
-/>
-```
+1. **`setTranslationHook()` removed** - Use `setupSnowForm({ translate: fn })` with a function instead of a hook
+2. **`registerFormUIStyles()` removed** - Import `@snowpact/react-rhf-zod-form/styles.css` and customize via CSS variables
+3. **`registerComponents()` moved** - Use `setupSnowForm({ components: {...} })` or continue using `registerComponents()` directly
+4. **`setOnErrorBehavior()` moved** - Use `setupSnowForm({ onError: fn })` or continue using `setOnErrorBehavior()` directly
 
 ## License
 

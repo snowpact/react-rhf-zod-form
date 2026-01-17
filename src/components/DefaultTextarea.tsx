@@ -1,6 +1,7 @@
 import type React from 'react';
 
 import type { RegisteredComponentProps } from '../types';
+import { cn } from '../utils';
 
 /**
  * Default textarea component (HTML native)
@@ -14,6 +15,7 @@ export function DefaultTextarea({
   disabled,
   placeholder,
   className,
+  error,
 }: RegisteredComponentProps<string>): React.ReactElement {
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     onChange(e.target.value);
@@ -28,7 +30,7 @@ export function DefaultTextarea({
       onBlur={onBlur}
       disabled={disabled}
       placeholder={placeholder}
-      className={className}
+      className={cn('snow-textarea', error && 'snow-input-error', className)}
       rows={4}
       data-testid={`auto-form-textarea-${name}`}
     />

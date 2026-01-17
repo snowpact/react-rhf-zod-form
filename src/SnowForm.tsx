@@ -6,8 +6,7 @@ import { SnowFormField } from './SnowFormField';
 import { Form, FormField } from './FormProvider';
 import { executeOnErrorBehavior } from './registry/behaviorRegistry';
 import { DefaultSubmitButton, getRegisteredSubmitButton } from './registry/componentRegistry';
-import { getFormUIStyles } from './registry/formUIRegistry';
-import { useSnowFormTranslation } from './registry/translationRegistry';
+import { getT } from './registry/translationRegistry';
 import type { SchemaFieldInfo, SnowFormHelpers, SnowFormProps, ZodObjectOrEffects } from './types';
 import {
   applyEmptyValueOverrides,
@@ -75,7 +74,7 @@ export function SnowForm<TSchema extends ZodObjectOrEffects, TResponse = unknown
 }: SnowFormProps<TSchema, TResponse>): React.ReactElement {
   type FormValues = z.infer<TSchema>;
 
-  const { t } = useSnowFormTranslation();
+  const t = getT();
   const formRef = useRef<HTMLFormElement>(null);
 
   // ==========================================================================
@@ -254,7 +253,6 @@ export function SnowForm<TSchema extends ZodObjectOrEffects, TResponse = unknown
   const renderSubmitButton = useCallback(
     (options?: { disabled?: boolean; className?: string; children?: ReactNode }): ReactNode => {
       const SubmitButton = getRegisteredSubmitButton() ?? DefaultSubmitButton;
-      const formStyles = getFormUIStyles();
       const isSubmitting = form.formState.isSubmitting;
       const isDisabled = options?.disabled || isFetchingDefaults || hasFetchError || isSubmitting;
 
@@ -262,9 +260,9 @@ export function SnowForm<TSchema extends ZodObjectOrEffects, TResponse = unknown
         <SubmitButton
           loading={isSubmitting}
           disabled={isDisabled}
-          className={cn(formStyles.submitButton, options?.className)}
+          className={cn('snow-btn snow-btn-primary', options?.className)}
         >
-          {options?.children ?? t('submit')}
+          {options?.children ?? t('snowForm.submit')}
         </SubmitButton>
       );
     },
@@ -297,15 +295,13 @@ export function SnowForm<TSchema extends ZodObjectOrEffects, TResponse = unknown
   // Render
   // ==========================================================================
 
-  const formStyles = getFormUIStyles();
-
   return (
     <Form {...form}>
       <form
         ref={formRef}
         id={id}
         onSubmit={form.handleSubmit(handleSubmit, handleInvalid)}
-        className={cn(formStyles.form, className)}
+        className={cn('snow-form', className)}
       >
         {children ? (
           // Children pattern: user controls layout

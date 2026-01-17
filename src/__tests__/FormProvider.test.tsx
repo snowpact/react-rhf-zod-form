@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { useForm } from 'react-hook-form';
 import { useEffect, type ReactNode } from 'react';
 
@@ -13,7 +13,6 @@ import {
   FormMessage,
   useFormField,
 } from '../FormProvider';
-import { registerFormUIStyles, resetFormUIRegistry } from '../registry/formUIRegistry';
 
 // =============================================================================
 // Test Wrapper
@@ -35,10 +34,6 @@ function TestForm({ children, defaultValues = { testField: '' } }: TestFormProps
 // =============================================================================
 
 describe('FormItem', () => {
-  beforeEach(() => {
-    resetFormUIRegistry();
-  });
-
   it('should render children', () => {
     render(
       <TestForm>
@@ -73,9 +68,7 @@ describe('FormItem', () => {
     expect(screen.getByText('Content').parentElement).toHaveClass('custom-class');
   });
 
-  it('should apply registered styles', () => {
-    registerFormUIStyles({ formItem: 'registered-item-class' });
-
+  it('should apply default snow-form-item class', () => {
     render(
       <TestForm>
         <FormField
@@ -89,7 +82,7 @@ describe('FormItem', () => {
       </TestForm>
     );
 
-    expect(screen.getByText('Content').parentElement).toHaveClass('registered-item-class');
+    expect(screen.getByText('Content').parentElement).toHaveClass('snow-form-item');
   });
 });
 
@@ -98,10 +91,6 @@ describe('FormItem', () => {
 // =============================================================================
 
 describe('FormLabel', () => {
-  beforeEach(() => {
-    resetFormUIRegistry();
-  });
-
   it('should render label with htmlFor attribute', () => {
     render(
       <TestForm>
@@ -173,9 +162,24 @@ describe('FormLabel', () => {
     expect(screen.getByText('Label')).toHaveClass('custom-label');
   });
 
-  it('should apply error styles when field is invalid', () => {
-    registerFormUIStyles({ formLabelError: 'error-label-class' });
+  it('should apply default snow-form-label class', () => {
+    render(
+      <TestForm>
+        <FormField
+          name="testField"
+          render={() => (
+            <FormItem>
+              <FormLabel>Label</FormLabel>
+            </FormItem>
+          )}
+        />
+      </TestForm>
+    );
 
+    expect(screen.getByText('Label')).toHaveClass('snow-form-label');
+  });
+
+  it('should apply error class when field is invalid', () => {
     function InvalidForm() {
       const form = useForm({
         defaultValues: { testField: '' },
@@ -202,7 +206,7 @@ describe('FormLabel', () => {
 
     render(<InvalidForm />);
 
-    expect(screen.getByText('Label')).toHaveClass('error-label-class');
+    expect(screen.getByText('Label')).toHaveClass('snow-form-label-error');
   });
 });
 
@@ -211,10 +215,6 @@ describe('FormLabel', () => {
 // =============================================================================
 
 describe('FormDescription', () => {
-  beforeEach(() => {
-    resetFormUIRegistry();
-  });
-
   it('should render description text', () => {
     render(
       <TestForm>
@@ -249,9 +249,7 @@ describe('FormDescription', () => {
     expect(screen.getByText('Description')).toHaveClass('custom-desc');
   });
 
-  it('should apply registered styles', () => {
-    registerFormUIStyles({ formDescription: 'registered-desc-class' });
-
+  it('should apply default snow-form-description class', () => {
     render(
       <TestForm>
         <FormField
@@ -265,7 +263,7 @@ describe('FormDescription', () => {
       </TestForm>
     );
 
-    expect(screen.getByText('Description')).toHaveClass('registered-desc-class');
+    expect(screen.getByText('Description')).toHaveClass('snow-form-description');
   });
 });
 
@@ -274,10 +272,6 @@ describe('FormDescription', () => {
 // =============================================================================
 
 describe('FormMessage', () => {
-  beforeEach(() => {
-    resetFormUIRegistry();
-  });
-
   it('should not render when no error', () => {
     render(
       <TestForm>
@@ -345,9 +339,7 @@ describe('FormMessage', () => {
     expect(screen.getByRole('alert')).toHaveTextContent('Custom message');
   });
 
-  it('should apply registered styles', () => {
-    registerFormUIStyles({ formMessage: 'registered-msg-class' });
-
+  it('should apply default snow-form-message class', () => {
     function FormWithError() {
       const form = useForm({ defaultValues: { testField: '' } });
 
@@ -371,7 +363,7 @@ describe('FormMessage', () => {
 
     render(<FormWithError />);
 
-    expect(screen.getByRole('alert')).toHaveClass('registered-msg-class');
+    expect(screen.getByRole('alert')).toHaveClass('snow-form-message');
   });
 });
 

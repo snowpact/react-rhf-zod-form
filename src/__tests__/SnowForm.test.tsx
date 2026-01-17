@@ -6,8 +6,7 @@ import { z } from 'zod';
 import { SnowForm } from '../SnowForm';
 import { resetBehaviorRegistry } from '../registry/behaviorRegistry';
 import { clearRegistry, registerComponent, registerSubmitButton } from '../registry/componentRegistry';
-import { resetFormUIRegistry } from '../registry/formUIRegistry';
-import { resetTranslationRegistry, setTranslationHook } from '../registry/translationRegistry';
+import { resetTranslationRegistry, setTranslationFunction } from '../registry/translationRegistry';
 
 // =============================================================================
 // Test Setup
@@ -17,7 +16,6 @@ beforeEach(() => {
   clearRegistry();
   resetTranslationRegistry();
   resetBehaviorRegistry();
-  resetFormUIRegistry();
   vi.clearAllMocks();
 });
 
@@ -382,16 +380,14 @@ describe('SnowForm', () => {
   // ===========================================================================
 
   describe('Translations', () => {
-    it('should use registered translation hook for labels', () => {
+    it('should use registered translation function for labels', () => {
       const schema = z.object({ email: z.string() });
 
-      // Translation hook receives field name directly (use namespace for prefix)
-      setTranslationHook(() => ({
-        t: (key: string) => {
-          if (key === 'email') return 'Adresse email';
-          return key;
-        },
-      }));
+      // Translation function receives field name directly
+      setTranslationFunction((key: string) => {
+        if (key === 'email') return 'Adresse email';
+        return key;
+      });
 
       render(<SnowForm schema={schema} />);
 

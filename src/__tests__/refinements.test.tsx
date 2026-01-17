@@ -6,7 +6,6 @@ import { z } from 'zod';
 import { SnowForm } from '../SnowForm';
 import { resetBehaviorRegistry } from '../registry/behaviorRegistry';
 import { clearRegistry } from '../registry/componentRegistry';
-import { resetFormUIRegistry } from '../registry/formUIRegistry';
 import { resetTranslationRegistry } from '../registry/translationRegistry';
 
 // =============================================================================
@@ -17,7 +16,6 @@ beforeEach(() => {
   clearRegistry();
   resetTranslationRegistry();
   resetBehaviorRegistry();
-  resetFormUIRegistry();
   vi.clearAllMocks();
 });
 

@@ -1,7 +1,7 @@
 import type React from 'react';
 
 import type { RegisteredComponentProps } from '../types';
-import { normalizeDateToISO } from '../utils';
+import { cn, normalizeDateToISO } from '../utils';
 
 /**
  * Default date picker component (HTML native)
@@ -14,6 +14,7 @@ export function DefaultDatePicker({
   name,
   disabled,
   className,
+  error,
 }: RegisteredComponentProps<Date | string | null>): React.ReactElement {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onChange(normalizeDateToISO(e.target.value || null));
@@ -36,7 +37,7 @@ export function DefaultDatePicker({
       onChange={handleChange}
       onBlur={onBlur}
       disabled={disabled}
-      className={className}
+      className={cn('snow-input', error && 'snow-input-error', className)}
       data-testid={`auto-form-date-${name}`}
     />
   );
