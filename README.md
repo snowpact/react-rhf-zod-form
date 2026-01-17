@@ -26,10 +26,6 @@ Automatic form generation from Zod schemas with react-hook-form.
 
 ```bash
 npm install @snowpact/react-rhf-zod-form
-# or
-pnpm add @snowpact/react-rhf-zod-form
-# or
-yarn add @snowpact/react-rhf-zod-form
 ```
 
 ### Peer Dependencies
@@ -119,7 +115,18 @@ setupSnowForm({
 });
 ```
 
-### 2. Use SnowForm
+### 2. Custom theme (optional)
+
+Customize the look by overriding CSS variables:
+
+```css
+:root {
+  --snow-ring: #8b5cf6;
+  --snow-radius: 0.5rem;
+}
+```
+
+### 3. Use SnowForm
 
 ```tsx
 import { SnowForm } from '@snowpact/react-rhf-zod-form';
@@ -150,36 +157,36 @@ function MyForm() {
 
 ### Automatic Detection (from Zod schema)
 
-| Zod Type | Default Component |
-|----------|-------------------|
-| `z.string()` | Text input |
-| `z.string().email()` | Email input |
-| `z.number()` | Number input |
-| `z.boolean()` | Checkbox |
-| `z.date()` | Date picker |
-| `z.enum([...])` | Select |
+| Zod Type             | Default Component |
+| -------------------- | ----------------- |
+| `z.string()`         | Text input        |
+| `z.string().email()` | Email input       |
+| `z.number()`         | Number input      |
+| `z.boolean()`        | Checkbox          |
+| `z.date()`           | Date picker       |
+| `z.enum([...])`      | Select            |
 
 ### Available Built-in Types (via overrides)
 
-| Type | Description |
-|------|-------------|
-| `text` | Standard text input |
-| `email` | Email input with validation styling |
-| `password` | Password input (masked) |
-| `number` | Numeric input |
-| `textarea` | Multi-line text area |
-| `select` | Dropdown select |
-| `checkbox` | Boolean checkbox |
-| `radio` | Radio button group |
-| `date` | Date picker |
-| `time` | Time picker |
-| `datetime-local` | Date and time picker |
-| `file` | File upload input |
-| `tel` | Telephone input |
-| `url` | URL input |
-| `color` | Color picker |
-| `hidden` | Hidden input |
-| *custom* | Any custom type you register |
+| Type             | Description                         |
+| ---------------- | ----------------------------------- |
+| `text`           | Standard text input                 |
+| `email`          | Email input with validation styling |
+| `password`       | Password input (masked)             |
+| `number`         | Numeric input                       |
+| `textarea`       | Multi-line text area                |
+| `select`         | Dropdown select                     |
+| `checkbox`       | Boolean checkbox                    |
+| `radio`          | Radio button group                  |
+| `date`           | Date picker                         |
+| `time`           | Time picker                         |
+| `datetime-local` | Date and time picker                |
+| `file`           | File upload input                   |
+| `tel`            | Telephone input                     |
+| `url`            | URL input                           |
+| `color`          | Color picker                        |
+| `hidden`         | Hidden input                        |
+| *custom*         | Any custom type you register        |
 
 ## Setup API
 
@@ -280,21 +287,21 @@ The default styles use CSS variables for easy customization:
 
 The library uses semantic class names:
 
-| Class | Description |
-|-------|-------------|
-| `.snow-form` | Form container |
-| `.snow-form-item` | Field wrapper |
-| `.snow-form-label` | Field label |
+| Class                    | Description      |
+| ------------------------ | ---------------- |
+| `.snow-form`             | Form container   |
+| `.snow-form-item`        | Field wrapper    |
+| `.snow-form-label`       | Field label      |
 | `.snow-form-label-error` | Label with error |
-| `.snow-form-description` | Help text |
-| `.snow-form-message` | Error message |
-| `.snow-input` | Input fields |
-| `.snow-textarea` | Textarea |
-| `.snow-select` | Select dropdown |
-| `.snow-checkbox` | Checkbox |
-| `.snow-radio` | Radio buttons |
-| `.snow-btn` | Buttons |
-| `.snow-btn-primary` | Primary button |
+| `.snow-form-description` | Help text        |
+| `.snow-form-message`     | Error message    |
+| `.snow-input`            | Input fields     |
+| `.snow-textarea`         | Textarea         |
+| `.snow-select`           | Select dropdown  |
+| `.snow-checkbox`         | Checkbox         |
+| `.snow-radio`            | Radio buttons    |
+| `.snow-btn`              | Buttons          |
+| `.snow-btn-primary`      | Primary button   |
 
 ## Schema Refinements
 
@@ -504,17 +511,17 @@ interface SnowFormProps<TSchema, TResponse = unknown> {
 
 ### Exported Functions
 
-| Function | Description |
-|----------|-------------|
-| `setupSnowForm(options)` | Initialize SnowForm (call once at app startup) |
-| `resetSnowForm()` | Reset all registries (mainly for testing) |
-| `registerComponents(map)` | Register multiple components |
-| `registerComponent(type, component)` | Register single component |
-| `registerSubmitButton(component)` | Register submit button |
-| `setTranslationFunction(fn)` | Set translation function |
-| `setTranslations(map)` | Set custom translations |
-| `setOnErrorBehavior(callback)` | Set error behavior |
-| `normalizeDateToISO(date)` | Convert date to ISO string |
+| Function                             | Description                                    |
+| ------------------------------------ | ---------------------------------------------- |
+| `setupSnowForm(options)`             | Initialize SnowForm (call once at app startup) |
+| `resetSnowForm()`                    | Reset all registries (mainly for testing)      |
+| `registerComponents(map)`            | Register multiple components                   |
+| `registerComponent(type, component)` | Register single component                      |
+| `registerSubmitButton(component)`    | Register submit button                         |
+| `setTranslationFunction(fn)`         | Set translation function                       |
+| `setTranslations(map)`               | Set custom translations                        |
+| `setOnErrorBehavior(callback)`       | Set error behavior                             |
+| `normalizeDateToISO(date)`           | Convert date to ISO string                     |
 
 ### Exported Types
 
