@@ -29,28 +29,6 @@
   --snow-error: #ef4444;
 }
 
-.dark,
-:root:where(.dark) {
-  --snow-background: #1a1a2e;
-  --snow-foreground: #eaeaea;
-  --snow-secondary: #16213e;
-  --snow-placeholder: #6b7280;
-  --snow-border: #0f3460;
-  --snow-ring: #3b82f6;
-  --snow-error: #f87171;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not(.light) {
-    --snow-background: #1a1a2e;
-    --snow-foreground: #eaeaea;
-    --snow-secondary: #16213e;
-    --snow-placeholder: #6b7280;
-    --snow-border: #0f3460;
-    --snow-ring: #3b82f6;
-    --snow-error: #f87171;
-  }
-}
 
 /* =============================================================================
    Form Layout
