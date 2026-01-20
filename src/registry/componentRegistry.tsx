@@ -12,6 +12,7 @@ import type {
   SubmitButtonProps,
 } from '../types';
 import { cn } from '../utils';
+import { getLabelClass, getDescriptionClass, getErrorMessageClass } from './stylesRegistry';
 
 // =============================================================================
 // Component Registry
@@ -200,7 +201,7 @@ export function DefaultSubmitButton({ loading, disabled, children, className }: 
  */
 function DefaultLabel({ children, required, invalid, htmlFor }: FormUILabelProps): React.ReactElement {
   return (
-    <label htmlFor={htmlFor} className={cn('snow-form-label', invalid && 'snow-form-label-error')}>
+    <label htmlFor={htmlFor} className={cn('snow-form-label', getLabelClass(), invalid && 'snow-form-label-error')}>
       {children}
       {required && <span aria-hidden="true"> *</span>}
     </label>
@@ -211,7 +212,7 @@ function DefaultLabel({ children, required, invalid, htmlFor }: FormUILabelProps
  * Default description component
  */
 function DefaultDescription({ children }: FormUIDescriptionProps): React.ReactElement {
-  return <p className="snow-form-description">{children}</p>;
+  return <p className={cn('snow-form-description', getDescriptionClass())}>{children}</p>;
 }
 
 /**
@@ -219,7 +220,7 @@ function DefaultDescription({ children }: FormUIDescriptionProps): React.ReactEl
  */
 function DefaultErrorMessage({ message }: FormUIErrorMessageProps): React.ReactElement {
   return (
-    <p className="snow-form-message" role="alert">
+    <p className={cn('snow-form-message', getErrorMessageClass())} role="alert">
       {message}
     </p>
   );

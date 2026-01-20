@@ -87,8 +87,11 @@ setupSnowForm({
     </button>
   ),
   styles: {
-    form: 'space-y-4',      // Applied to <form>
-    formItem: 'grid gap-2', // Applied to each field wrapper
+    form: 'space-y-4',              // Applied to <form>
+    formItem: 'grid gap-2',         // Applied to each field wrapper
+    label: 'text-sm font-medium',   // Applied to labels
+    description: 'text-xs text-gray-500', // Applied to descriptions
+    errorMessage: 'text-xs text-red-500', // Applied to error messages
   },
 });
 ```
@@ -114,6 +117,9 @@ setupSnowForm({
   styles: {
     form: 'space-y-4',
     formItem: 'grid gap-2',
+    label: 'text-sm font-medium',
+    description: 'text-xs text-gray-500',
+    errorMessage: 'text-xs text-red-500',
   },
 });
 ```

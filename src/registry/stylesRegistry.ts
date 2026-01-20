@@ -10,6 +10,12 @@ export interface FormStyles {
   form?: string;
   /** CSS class for field wrappers (e.g., 'grid gap-2') */
   formItem?: string;
+  /** CSS class for labels (e.g., 'text-sm font-medium') */
+  label?: string;
+  /** CSS class for descriptions (e.g., 'text-xs text-gray-500') */
+  description?: string;
+  /** CSS class for error messages (e.g., 'text-xs text-red-500') */
+  errorMessage?: string;
 }
 
 let registeredStyles: FormStyles = {};
@@ -44,6 +50,30 @@ export function getFormClass(): string | undefined {
  */
 export function getFormItemClass(): string | undefined {
   return registeredStyles.formItem;
+}
+
+/**
+ * Get the registered label class
+ * @internal Used by DEFAULT_FORM_UI
+ */
+export function getLabelClass(): string | undefined {
+  return registeredStyles.label;
+}
+
+/**
+ * Get the registered description class
+ * @internal Used by DEFAULT_FORM_UI
+ */
+export function getDescriptionClass(): string | undefined {
+  return registeredStyles.description;
+}
+
+/**
+ * Get the registered error message class
+ * @internal Used by DEFAULT_FORM_UI
+ */
+export function getErrorMessageClass(): string | undefined {
+  return registeredStyles.errorMessage;
 }
 
 /**

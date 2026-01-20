@@ -36,6 +36,9 @@ import {
   setFormStyles,
   getFormClass,
   getFormItemClass,
+  getLabelClass,
+  getDescriptionClass,
+  getErrorMessageClass,
   resetStylesRegistry,
   type FormStyles,
 } from './stylesRegistry';
@@ -172,16 +175,21 @@ export interface SetupSnowFormOptions {
   formUI?: FormUIComponents;
 
   /**
-   * CSS classes for form layout
-   * Use this to apply consistent spacing/layout across all forms
+   * CSS classes for form layout and UI elements
+   * Use this to apply consistent styling across all forms.
+   * These classes are added to DEFAULT_FORM_UI components.
    *
    * @example
    * ```typescript
    * setupSnowForm({
    *   translate: t,
+   *   formUI: DEFAULT_FORM_UI,
    *   styles: {
    *     form: 'space-y-4',
    *     formItem: 'grid gap-2',
+   *     label: 'text-sm font-medium',
+   *     description: 'text-xs text-gray-500',
+   *     errorMessage: 'text-xs text-red-500',
    *   },
    * });
    * ```
@@ -354,6 +362,9 @@ export {
   setFormStyles,
   getFormClass,
   getFormItemClass,
+  getLabelClass,
+  getDescriptionClass,
+  getErrorMessageClass,
   resetStylesRegistry,
   type FormStyles,
 };
