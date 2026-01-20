@@ -121,8 +121,8 @@ Customize the look by overriding CSS variables:
 
 ```css
 :root {
-  --snow-ring: #8b5cf6;
-  --snow-radius: 0.5rem;
+  --snow-input-active-ring: #8b5cf6;
+  --snow-input-radius: 0.5rem;
 }
 ```
 
@@ -261,25 +261,23 @@ The default styles use CSS variables for easy customization:
 
 ```css
 :root {
-  --snow-background: #ffffff;
-  --snow-foreground: #0a0a0a;
-  --snow-secondary: #f5f5f5;
-  --snow-placeholder: #9ca3af;
-  --snow-border: #e5e5e5;
-  --snow-ring: #3b82f6;
-  --snow-radius: 0.375rem;
-  --snow-error: #ef4444;
+  --snow-input-foreground: #0a0a0a;
+  --snow-input-placeholder: #9ca3af;
+  --snow-input-border: #e5e5e5;
+  --snow-input-active-ring: #3b82f6;
+  --snow-input-disabled-background: #f5f5f5;
+  --snow-input-radius: 0.375rem;
+  --snow-input-error: #ef4444;
 }
 
 /* Dark mode */
 .dark {
-  --snow-background: #1a1a2e;
-  --snow-foreground: #eaeaea;
-  --snow-secondary: #16213e;
-  --snow-placeholder: #6b7280;
-  --snow-border: #0f3460;
-  --snow-ring: #3b82f6;
-  --snow-error: #f87171;
+  --snow-input-foreground: #eaeaea;
+  --snow-input-placeholder: #6b7280;
+  --snow-input-border: #0f3460;
+  --snow-input-active-ring: #3b82f6;
+  --snow-input-disabled-background: #16213e;
+  --snow-input-error: #f87171;
 }
 ```
 

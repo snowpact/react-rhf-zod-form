@@ -9,8 +9,8 @@
  *
  * @example Customizing via CSS variables
  * :root {
- *   --snow-ring: #8b5cf6;
- *   --snow-radius: 0.5rem;
+ *   --snow-input-active-ring: #8b5cf6;
+ *   --snow-input-radius: 0.5rem;
  * }
  */
 
@@ -19,14 +19,13 @@
    ============================================================================= */
 
 :root {
-  --snow-background: #ffffff;
-  --snow-foreground: #0a0a0a;
-  --snow-secondary: #f5f5f5;
-  --snow-placeholder: #9ca3af;
-  --snow-border: #e5e5e5;
-  --snow-ring: #3b82f6;
-  --snow-radius: 0.375rem;
-  --snow-error: #ef4444;
+  --snow-input-foreground: #0a0a0a;
+  --snow-input-placeholder: #9ca3af;
+  --snow-input-border: #e5e5e5;
+  --snow-input-active-ring: #3b82f6;
+  --snow-input-disabled-background: #f5f5f5;
+  --snow-input-radius: 0.375rem;
+  --snow-input-error: #ef4444;
 }
 
 
@@ -48,12 +47,12 @@
 .snow-form-label {
   font-size: 0.875rem;
   font-weight: 500;
-  color: var(--snow-foreground);
+  color: var(--snow-input-foreground);
   line-height: 1.25;
 }
 
 .snow-form-label-error {
-  color: var(--snow-error);
+  color: var(--snow-input-error);
 }
 
 .snow-form-description,
@@ -63,11 +62,11 @@
 }
 
 .snow-form-description {
-  color: var(--snow-placeholder);
+  color: var(--snow-input-placeholder);
 }
 
 .snow-form-message {
-  color: var(--snow-error);
+  color: var(--snow-input-error);
 }
 
 /* =============================================================================
@@ -81,24 +80,24 @@
   padding: 0.5rem 0.75rem;
   font-size: 0.875rem;
   line-height: 1.5;
-  border: 1px solid var(--snow-border);
-  border-radius: var(--snow-radius);
-  background: var(--snow-background);
-  color: var(--snow-foreground);
+  border: 1px solid var(--snow-input-border);
+  border-radius: var(--snow-input-radius);
+  background: inherit;
+  color: var(--snow-input-foreground);
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .snow-input::placeholder,
 .snow-textarea::placeholder {
-  color: var(--snow-placeholder);
+  color: var(--snow-input-placeholder);
 }
 
 .snow-input:focus,
 .snow-textarea:focus,
 .snow-select:focus {
-  border-color: var(--snow-ring);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--snow-ring) 20%, transparent);
+  border-color: var(--snow-input-active-ring);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--snow-input-active-ring) 20%, transparent);
 }
 
 .snow-input:disabled,
@@ -106,15 +105,15 @@
 .snow-select:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-  background: var(--snow-secondary);
+  background: var(--snow-input-disabled-background);
 }
 
 .snow-input-error {
-  border-color: var(--snow-error);
+  border-color: var(--snow-input-error);
 }
 
 .snow-input-error:focus {
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--snow-error) 20%, transparent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--snow-input-error) 20%, transparent);
 }
 
 /* Textarea specific */
@@ -143,7 +142,7 @@
 .snow-radio {
   width: 1rem;
   height: 1rem;
-  accent-color: var(--snow-ring);
+  accent-color: var(--snow-input-active-ring);
   cursor: pointer;
 }
 
@@ -190,7 +189,7 @@
   gap: 0.5rem;
   cursor: pointer;
   font-size: 0.875rem;
-  color: var(--snow-foreground);
+  color: var(--snow-input-foreground);
 }
 
 .snow-radio-label:has(input:disabled) {
@@ -211,7 +210,7 @@
   font-size: 0.875rem;
   font-weight: 500;
   line-height: 1.5;
-  border-radius: var(--snow-radius);
+  border-radius: var(--snow-input-radius);
   cursor: pointer;
   transition: background-color 0.2s, opacity 0.2s;
   font-family: inherit;
@@ -223,34 +222,20 @@
 }
 
 .snow-btn-primary {
-  background: var(--snow-ring);
+  background: var(--snow-input-active-ring);
   color: white;
   border: none;
 }
 
 .snow-btn-primary:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--snow-ring) 85%, black);
+  background: color-mix(in srgb, var(--snow-input-active-ring) 85%, black);
 }
 
 .snow-btn-primary:focus {
   outline: none;
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--snow-ring) 40%, transparent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--snow-input-active-ring) 40%, transparent);
 }
 
-.snow-btn-secondary {
-  background: var(--snow-secondary);
-  color: var(--snow-foreground);
-  border: 1px solid var(--snow-border);
-}
-
-.snow-btn-secondary:hover:not(:disabled) {
-  background: var(--snow-border);
-}
-
-.snow-btn-secondary:focus {
-  outline: none;
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--snow-ring) 20%, transparent);
-}
 
 /* =============================================================================
    Utility

@@ -15,7 +15,7 @@ export interface DemoConfig {
 export interface ThemeColors {
   background: string;
   foreground: string;
-  secondary: string;
+  disabledBackground: string;
   placeholder: string;
   border: string;
   ring: string;
@@ -27,7 +27,7 @@ export const themes: Record<string, ThemeColors> = {
   default: {
     background: '#ffffff',
     foreground: '#0a0a0a',
-    secondary: '#f5f5f5',
+    disabledBackground: '#f5f5f5',
     placeholder: '#9ca3af',
     border: '#e5e5e5',
     ring: '#3b82f6',
@@ -37,7 +37,7 @@ export const themes: Record<string, ThemeColors> = {
   dark: {
     background: '#1a1a2e',
     foreground: '#eaeaea',
-    secondary: '#16213e',
+    disabledBackground: '#16213e',
     placeholder: '#6b7280',
     border: '#0f3460',
     ring: '#3b82f6',
@@ -47,7 +47,7 @@ export const themes: Record<string, ThemeColors> = {
   ocean: {
     background: '#f0f9ff',
     foreground: '#0c4a6e',
-    secondary: '#e0f2fe',
+    disabledBackground: '#e0f2fe',
     placeholder: '#7dd3fc',
     border: '#bae6fd',
     ring: '#0284c7',
@@ -57,7 +57,7 @@ export const themes: Record<string, ThemeColors> = {
   forest: {
     background: '#f0fdf4',
     foreground: '#14532d',
-    secondary: '#dcfce7',
+    disabledBackground: '#dcfce7',
     placeholder: '#86efac',
     border: '#bbf7d0',
     ring: '#22c55e',
@@ -67,7 +67,7 @@ export const themes: Record<string, ThemeColors> = {
   sunset: {
     background: '#fff7ed',
     foreground: '#9a3412',
-    secondary: '#ffedd5',
+    disabledBackground: '#ffedd5',
     placeholder: '#fdba74',
     border: '#fed7aa',
     ring: '#ea580c',

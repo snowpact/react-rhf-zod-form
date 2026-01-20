@@ -66,14 +66,13 @@ export function App() {
   useEffect(() => {
     const theme = themes[currentTheme];
     const root = document.documentElement;
-    root.style.setProperty('--snow-background', theme.background);
-    root.style.setProperty('--snow-foreground', theme.foreground);
-    root.style.setProperty('--snow-secondary', theme.secondary);
-    root.style.setProperty('--snow-placeholder', theme.placeholder);
-    root.style.setProperty('--snow-border', theme.border);
-    root.style.setProperty('--snow-ring', theme.ring);
-    root.style.setProperty('--snow-error', theme.error);
-    root.style.setProperty('--snow-radius', theme.radius);
+    root.style.setProperty('--snow-input-foreground', theme.foreground);
+    root.style.setProperty('--snow-input-placeholder', theme.placeholder);
+    root.style.setProperty('--snow-input-border', theme.border);
+    root.style.setProperty('--snow-input-active-ring', theme.ring);
+    root.style.setProperty('--snow-input-disabled-background', theme.disabledBackground);
+    root.style.setProperty('--snow-input-error', theme.error);
+    root.style.setProperty('--snow-input-radius', theme.radius);
   }, [currentTheme]);
 
   const handleSubmit = async (data: FormData) => {
@@ -204,7 +203,7 @@ export function App() {
 
           <div
             className="rounded-lg shadow-md p-6 mb-8"
-            style={{ backgroundColor: 'var(--snow-background)', color: 'var(--snow-foreground)' }}
+            style={{ backgroundColor: themes[currentTheme].background, color: 'var(--snow-input-foreground)' }}
           >
             {renderForm()}
           </div>
