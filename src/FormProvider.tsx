@@ -9,6 +9,7 @@ import {
 } from 'react-hook-form';
 
 import { getFormUI } from './registry/componentRegistry';
+import { getFormItemClass } from './registry/stylesRegistry';
 import { cn } from './utils';
 
 // =============================================================================
@@ -91,7 +92,7 @@ interface FormItemProps {
  * Wrapper for a form field (container for label + input + error)
  */
 export function FormItem({ children, className }: FormItemProps): React.ReactElement {
-  return <div className={cn('snow-form-item', className)}>{children}</div>;
+  return <div className={cn('snow-form-item', getFormItemClass(), className)}>{children}</div>;
 }
 
 interface FormLabelProps {

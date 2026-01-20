@@ -6,6 +6,7 @@ import { SnowFormField } from './SnowFormField';
 import { Form, FormField } from './FormProvider';
 import { executeOnErrorBehavior } from './registry/behaviorRegistry';
 import { DefaultSubmitButton, getRegisteredSubmitButton } from './registry/componentRegistry';
+import { getFormClass } from './registry/stylesRegistry';
 import { getT } from './registry/translationRegistry';
 import type { SchemaFieldInfo, SnowFormHelpers, SnowFormProps, ZodObjectOrEffects } from './types';
 import {
@@ -301,7 +302,7 @@ export function SnowForm<TSchema extends ZodObjectOrEffects, TResponse = unknown
         ref={formRef}
         id={id}
         onSubmit={form.handleSubmit(handleSubmit, handleInvalid)}
-        className={cn('snow-form', className)}
+        className={cn('snow-form', getFormClass(), className)}
       >
         {children ? (
           // Children pattern: user controls layout

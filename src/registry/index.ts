@@ -32,6 +32,14 @@ import {
   type OnErrorBehavior,
 } from './behaviorRegistry';
 
+import {
+  setFormStyles,
+  getFormClass,
+  getFormItemClass,
+  resetStylesRegistry,
+  type FormStyles,
+} from './stylesRegistry';
+
 // =============================================================================
 // Setup Types
 // =============================================================================
@@ -162,6 +170,23 @@ export interface SetupSnowFormOptions {
    * ```
    */
   formUI?: FormUIComponents;
+
+  /**
+   * CSS classes for form layout
+   * Use this to apply consistent spacing/layout across all forms
+   *
+   * @example
+   * ```typescript
+   * setupSnowForm({
+   *   translate: t,
+   *   styles: {
+   *     form: 'space-y-4',
+   *     formItem: 'grid gap-2',
+   *   },
+   * });
+   * ```
+   */
+  styles?: FormStyles;
 }
 
 // =============================================================================
@@ -256,6 +281,11 @@ export function setupSnowForm(options: SetupSnowFormOptions): void {
     registerFormUI(options.formUI);
   }
 
+  // Set form styles (optional)
+  if (options.styles) {
+    setFormStyles(options.styles);
+  }
+
   isSetup = true;
 }
 
@@ -268,6 +298,7 @@ export function resetSnowForm(): void {
   resetTranslationRegistry();
   clearRegistry();
   resetBehaviorRegistry();
+  resetStylesRegistry();
 }
 
 /**
@@ -316,4 +347,13 @@ export {
   executeOnErrorBehavior,
   resetBehaviorRegistry,
   type OnErrorBehavior,
+};
+
+// Styles registry
+export {
+  setFormStyles,
+  getFormClass,
+  getFormItemClass,
+  resetStylesRegistry,
+  type FormStyles,
 };

@@ -33,6 +33,8 @@ export {
   getT,
   // Behavior
   setOnErrorBehavior,
+  // Styles
+  setFormStyles,
   // Default constants
   DEFAULT_FORM_UI,
   DEFAULT_SUBMIT_BUTTON,
@@ -79,4 +81,4 @@ export type {
   SnowFormConfig,
 } from './types';
 
-export type { OnErrorBehavior, TranslationFunction } from './registry';
+export type { OnErrorBehavior, TranslationFunction, FormStyles } from './registry';

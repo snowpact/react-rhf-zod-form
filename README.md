@@ -86,6 +86,10 @@ setupSnowForm({
       {loading ? 'Loading...' : children}
     </button>
   ),
+  styles: {
+    form: 'space-y-4',      // Applied to <form>
+    formItem: 'grid gap-2', // Applied to each field wrapper
+  },
 });
 ```
 
@@ -107,6 +111,10 @@ setupSnowForm({
   components: DEFAULT_COMPONENTS,
   formUI: DEFAULT_FORM_UI,
   submitButton: DEFAULT_SUBMIT_BUTTON,
+  styles: {
+    form: 'space-y-4',
+    formItem: 'grid gap-2',
+  },
 });
 ```
 
@@ -510,6 +518,7 @@ interface SnowFormProps<TSchema, TResponse = unknown> {
 | `setTranslationFunction(fn)`         | Set translation function                       |
 | `setTranslations(map)`               | Set custom translations                        |
 | `setOnErrorBehavior(callback)`       | Set error behavior                             |
+| `setFormStyles(styles)`              | Set CSS classes for form and formItem          |
 | `normalizeDateToISO(date)`           | Convert date to ISO string                     |
 
 ### Exported Constants
@@ -536,6 +545,7 @@ import type {
   SetupSnowFormOptions,
   TranslationFunction,
   OnErrorBehavior,
+  FormStyles,
   // Form UI types
   FormUIComponents,
   FormUILabelProps,
