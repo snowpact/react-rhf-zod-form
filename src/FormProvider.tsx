@@ -103,19 +103,11 @@ interface FormLabelProps {
 
 /**
  * Label for a form field.
- * Requires a label component to be registered via setupSnowForm({ formUI: ... }).
+ * Uses registered label component or DEFAULT_FORM_UI fallback.
  */
-export function FormLabel({ children, required }: FormLabelProps): React.ReactElement | null {
+export function FormLabel({ children, required }: FormLabelProps): React.ReactElement {
   const { id, invalid } = useFormField();
   const { label: Label } = getFormUI();
-
-  if (!Label) {
-    console.warn(
-      '[SnowForm] No label component registered. ' +
-        'Use setupSnowForm({ formUI: DEFAULT_FORM_UI }) or register your own.'
-    );
-    return null;
-  }
 
   return (
     <Label htmlFor={id} required={required} invalid={invalid}>
@@ -144,18 +136,10 @@ interface FormDescriptionProps {
 
 /**
  * Help text below a form field.
- * Requires a description component to be registered via setupSnowForm({ formUI: ... }).
+ * Uses registered description component or DEFAULT_FORM_UI fallback.
  */
-export function FormDescription({ children }: FormDescriptionProps): React.ReactElement | null {
+export function FormDescription({ children }: FormDescriptionProps): React.ReactElement {
   const { description: Description } = getFormUI();
-
-  if (!Description) {
-    console.warn(
-      '[SnowForm] No description component registered. ' +
-        'Use setupSnowForm({ formUI: DEFAULT_FORM_UI }) or register your own.'
-    );
-    return null;
-  }
 
   return <Description>{children}</Description>;
 }
@@ -168,24 +152,14 @@ interface FormMessageProps {
 /**
  * Error message for a form field.
  * Automatically displays the field's error if present.
- * Requires an errorMessage component to be registered via setupSnowForm({ formUI: ... }).
+ * Uses registered errorMessage component or DEFAULT_FORM_UI fallback.
  */
 export function FormMessage({ children }: FormMessageProps): React.ReactElement | null {
   const { error } = useFormField();
   const { errorMessage: ErrorMessage } = getFormUI();
   const message = error?.message ?? children;
 
-  if (!message) return null;
-
-  if (!ErrorMessage) {
-    console.warn(
-      '[SnowForm] No errorMessage component registered. ' +
-        'Use setupSnowForm({ formUI: DEFAULT_FORM_UI }) or register your own.'
-    );
-    return null;
-  }
-
-  if (typeof message !== 'string') {
+  if (!message || typeof message !== 'string') {
     return null;
   }
 

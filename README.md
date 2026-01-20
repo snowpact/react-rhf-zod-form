@@ -104,7 +104,6 @@ Use SnowForm's built-in components for quick prototyping. **Requires CSS import.
 import {
   setupSnowForm,
   DEFAULT_COMPONENTS,
-  DEFAULT_FORM_UI,
   DEFAULT_SUBMIT_BUTTON,
 } from '@snowpact/react-rhf-zod-form';
 import '@snowpact/react-rhf-zod-form/styles.css'; // Required for default components
@@ -112,7 +111,6 @@ import '@snowpact/react-rhf-zod-form/styles.css'; // Required for default compon
 setupSnowForm({
   translate: (key) => key,
   components: DEFAULT_COMPONENTS,
-  formUI: DEFAULT_FORM_UI,
   submitButton: DEFAULT_SUBMIT_BUTTON,
   styles: {
     form: 'space-y-4',
@@ -129,11 +127,7 @@ setupSnowForm({
 Extend default components with your own. **Requires CSS import for defaults.**
 
 ```tsx
-import {
-  setupSnowForm,
-  DEFAULT_COMPONENTS,
-  DEFAULT_FORM_UI,
-} from '@snowpact/react-rhf-zod-form';
+import { setupSnowForm, DEFAULT_COMPONENTS } from '@snowpact/react-rhf-zod-form';
 import '@snowpact/react-rhf-zod-form/styles.css';
 
 setupSnowForm({
@@ -142,8 +136,10 @@ setupSnowForm({
     ...DEFAULT_COMPONENTS,
     text: MyCustomInput, // Override just this one
   },
-  formUI: DEFAULT_FORM_UI,
   submitButton: MyCustomButton,
+  formUI: {
+    label: MyCustomLabel, // Override just the label
+  },
 });
 ```
 

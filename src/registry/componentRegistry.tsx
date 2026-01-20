@@ -145,9 +145,14 @@ export function getRegisteredSubmitButton(): RegisteredSubmitButton | undefined 
 
 /**
  * Get the registered form UI components
+ * Falls back to DEFAULT_FORM_UI for any unregistered component
  */
-export function getFormUI(): FormUIComponents {
-  return formUIComponents;
+export function getFormUI(): Required<FormUIComponents> {
+  return {
+    label: formUIComponents.label ?? DefaultLabel,
+    description: formUIComponents.description ?? DefaultDescription,
+    errorMessage: formUIComponents.errorMessage ?? DefaultErrorMessage,
+  };
 }
 
 /**
