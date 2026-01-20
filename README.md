@@ -265,20 +265,20 @@ setupSnowForm({
 
 If using the default styles, these class names are available for additional customization:
 
-| Class | Description |
-|-------|-------------|
-| `.snow-form` | Form container |
-| `.snow-form-item` | Field wrapper |
-| `.snow-form-label` | Field label |
+| Class                    | Description      |
+| ------------------------ | ---------------- |
+| `.snow-form`             | Form container   |
+| `.snow-form-item`        | Field wrapper    |
+| `.snow-form-label`       | Field label      |
 | `.snow-form-label-error` | Label with error |
-| `.snow-form-description` | Help text |
-| `.snow-form-message` | Error message |
-| `.snow-input` | Text inputs |
-| `.snow-textarea` | Textarea |
-| `.snow-select` | Select dropdown |
-| `.snow-checkbox` | Checkbox |
-| `.snow-radio` | Radio buttons |
-| `.snow-form-submit-btn` | Submit button |
+| `.snow-form-description` | Help text        |
+| `.snow-form-message`     | Error message    |
+| `.snow-input`            | Text inputs      |
+| `.snow-textarea`         | Textarea         |
+| `.snow-select`           | Select dropdown  |
+| `.snow-checkbox`         | Checkbox         |
+| `.snow-radio`            | Radio buttons    |
+| `.snow-form-submit-btn`  | Submit button    |
 
 ## Schema Refinements
 
@@ -514,11 +514,11 @@ interface SnowFormProps<TSchema, TResponse = unknown> {
 
 ### Exported Constants
 
-| Constant                | Description                                              |
-| ----------------------- | -------------------------------------------------------- |
-| `DEFAULT_COMPONENTS`    | Default input components (text, select, checkbox, etc.)  |
-| `DEFAULT_FORM_UI`       | Default form UI components (label, description, error)   |
-| `DEFAULT_SUBMIT_BUTTON` | Default submit button component                          |
+| Constant                | Description                                             |
+| ----------------------- | ------------------------------------------------------- |
+| `DEFAULT_COMPONENTS`    | Default input components (text, select, checkbox, etc.) |
+| `DEFAULT_FORM_UI`       | Default form UI components (label, description, error)  |
+| `DEFAULT_SUBMIT_BUTTON` | Default submit button component                         |
 
 > **Note:** When using these constants, import `@snowpact/react-rhf-zod-form/styles.css`.
 
@@ -595,13 +595,6 @@ setupSnowForm({
 });
 ```
 
-### Breaking Changes
-
-1. **`setTranslationHook()` removed** - Use `setupSnowForm({ translate: fn })` with a function instead of a hook
-2. **`registerFormUIStyles()` removed** - Import `@snowpact/react-rhf-zod-form/styles.css` or register custom components via `formUI`
-3. **CSS Variables removed** - Default styles now use hardcoded values. For customization, register your own components via `setupSnowForm({ formUI: {...} })`
-4. **`registerComponents()` moved** - Use `setupSnowForm({ components: {...} })` or continue using `registerComponents()` directly
-5. **`setOnErrorBehavior()` moved** - Use `setupSnowForm({ onError: fn })` or continue using `setOnErrorBehavior()` directly
 
 ## License
 
