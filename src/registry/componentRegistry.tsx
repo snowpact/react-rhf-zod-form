@@ -9,7 +9,6 @@ import type {
   RegisterableComponent,
   RegisteredComponent,
   RegisteredSubmitButton,
-  SubmitButtonProps,
 } from '../types';
 import { cn } from '../utils';
 import { getLabelClass, getDescriptionClass, getErrorMessageClass } from './stylesRegistry';
@@ -137,7 +136,7 @@ export function getRegisteredComponent(type: string): RegisteredComponent | unde
 
 /**
  * Get the registered submit button component
- * Returns undefined if not registered (will use default)
+ * Returns undefined if not registered
  */
 export function getRegisteredSubmitButton(): RegisteredSubmitButton | undefined {
   return submitButtonComponent ?? undefined;
@@ -145,7 +144,7 @@ export function getRegisteredSubmitButton(): RegisteredSubmitButton | undefined 
 
 /**
  * Get the registered form UI components
- * Falls back to DEFAULT_FORM_UI for any unregistered component
+ * Falls back to minimal inline fallbacks for any unregistered component
  */
 export function getFormUI(): Required<FormUIComponents> {
   return {
@@ -183,26 +182,11 @@ export function clearRegistry(): void {
 }
 
 // =============================================================================
-// Default Submit Button
+// Internal Fallback Form UI Components (not exported)
 // =============================================================================
 
 /**
- * Default submit button used when none is registered
- */
-export function DefaultSubmitButton({ loading, disabled, children, className }: SubmitButtonProps): React.ReactElement {
-  return (
-    <button type="submit" disabled={disabled || loading} className={className}>
-      {loading ? 'Loading...' : (children ?? 'Submit')}
-    </button>
-  );
-}
-
-// =============================================================================
-// Default Form UI Components
-// =============================================================================
-
-/**
- * Default label component
+ * Minimal fallback label component (used when none registered)
  */
 function DefaultLabel({ children, required, invalid, htmlFor }: FormUILabelProps): React.ReactElement {
   return (
@@ -214,14 +198,14 @@ function DefaultLabel({ children, required, invalid, htmlFor }: FormUILabelProps
 }
 
 /**
- * Default description component
+ * Minimal fallback description component (used when none registered)
  */
 function DefaultDescription({ children }: FormUIDescriptionProps): React.ReactElement {
   return <p className={cn('snow-form-description', getDescriptionClass())}>{children}</p>;
 }
 
 /**
- * Default error message component
+ * Minimal fallback error message component (used when none registered)
  */
 function DefaultErrorMessage({ message }: FormUIErrorMessageProps): React.ReactElement {
   return (
@@ -230,47 +214,3 @@ function DefaultErrorMessage({ message }: FormUIErrorMessageProps): React.ReactE
     </p>
   );
 }
-
-// =============================================================================
-// Default Constants for Export
-// =============================================================================
-
-/**
- * Default form UI components (label, description, errorMessage).
- * Import these if you want to use SnowForm's default styled UI components.
- * Requires importing '@snowpact/react-rhf-zod-form/styles.css'.
- *
- * @example
- * ```typescript
- * import { setupSnowForm, DEFAULT_FORM_UI } from '@snowpact/react-rhf-zod-form';
- * import '@snowpact/react-rhf-zod-form/styles.css';
- *
- * setupSnowForm({
- *   translate: (key) => key,
- *   formUI: DEFAULT_FORM_UI,
- * });
- * ```
- */
-export const DEFAULT_FORM_UI: FormUIComponents = {
-  label: DefaultLabel,
-  description: DefaultDescription,
-  errorMessage: DefaultErrorMessage,
-};
-
-/**
- * Default submit button component.
- * Import this if you want to use SnowForm's default styled submit button.
- * Requires importing '@snowpact/react-rhf-zod-form/styles.css'.
- *
- * @example
- * ```typescript
- * import { setupSnowForm, DEFAULT_SUBMIT_BUTTON } from '@snowpact/react-rhf-zod-form';
- * import '@snowpact/react-rhf-zod-form/styles.css';
- *
- * setupSnowForm({
- *   translate: (key) => key,
- *   submitButton: DEFAULT_SUBMIT_BUTTON,
- * });
- * ```
- */
-export const DEFAULT_SUBMIT_BUTTON: RegisteredSubmitButton = DefaultSubmitButton;

@@ -5,7 +5,7 @@ import type { z } from 'zod';
 import { SnowFormField } from './SnowFormField';
 import { Form, FormField } from './FormProvider';
 import { executeOnErrorBehavior } from './registry/behaviorRegistry';
-import { DefaultSubmitButton, getRegisteredSubmitButton } from './registry/componentRegistry';
+import { getRegisteredSubmitButton } from './registry/componentRegistry';
 import { getFormClass } from './registry/stylesRegistry';
 import { getT } from './registry/translationRegistry';
 import type { SchemaFieldInfo, SnowFormHelpers, SnowFormProps, ZodObjectOrEffects } from './types';
@@ -253,9 +253,19 @@ export function SnowForm<TSchema extends ZodObjectOrEffects, TResponse = unknown
 
   const renderSubmitButton = useCallback(
     (options?: { disabled?: boolean; className?: string; children?: ReactNode }): ReactNode => {
-      const SubmitButton = getRegisteredSubmitButton() ?? DefaultSubmitButton;
+      const SubmitButton = getRegisteredSubmitButton();
       const isSubmitting = form.formState.isSubmitting;
       const isDisabled = options?.disabled || isFetchingDefaults || hasFetchError || isSubmitting;
+
+      if (!SubmitButton) {
+        console.warn('[SnowForm] No submit button registered. Use setupSnowForm({ submitButton: ... })');
+        // Minimal fallback
+        return (
+          <button type="submit" disabled={isDisabled} className={cn('snow-form-submit-btn', options?.className)}>
+            {isSubmitting ? 'Loading...' : (options?.children ?? t('submit'))}
+          </button>
+        );
+      }
 
       return (
         <SubmitButton

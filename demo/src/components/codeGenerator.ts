@@ -1,19 +1,17 @@
-import type { DemoConfig, ComponentMode } from './types';
+import type { DemoConfig } from './types';
 
 export function generateInstallCode(): string {
   return `npm install react-hook-form @hookform/resolvers zod
 npm install @snowpact/react-rhf-zod-form`;
 }
 
-export function generateSetupCode(mode: ComponentMode): string {
-  if (mode === 'custom') {
-    return `// Run once at app startup (e.g., app/setup.ts, _app.tsx, main.tsx)
+export function generateSetupCode(): string {
+  return `// Run once at app startup (e.g., app/setup.ts, _app.tsx, main.tsx)
 import { setupSnowForm } from '@snowpact/react-rhf-zod-form';
-import type { RegisteredComponentProps, FormUILabelProps } from '@snowpact/react-rhf-zod-form';
-// NO CSS import needed - custom components handle their own styling
+import type { RegisteredComponentProps } from '@snowpact/react-rhf-zod-form';
 
-// Example custom input component
-function CustomInput({ value, onChange, placeholder, disabled, name }: RegisteredComponentProps<string>) {
+// Your input component
+function MyInput({ value, onChange, placeholder, disabled, name }: RegisteredComponentProps<string>) {
   return (
     <input
       id={name}
@@ -22,62 +20,44 @@ function CustomInput({ value, onChange, placeholder, disabled, name }: Registere
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
       disabled={disabled}
-      className="w-full px-3 py-2 border-2 border-purple-300 rounded-lg
-                 focus:border-purple-500 focus:ring-2 focus:ring-purple-200"
+      className="w-full px-3 py-2 border border-gray-300 rounded-md
+                 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
     />
-  );
-}
-
-// Example custom label component
-function CustomLabel({ children, required, invalid, htmlFor }: FormUILabelProps) {
-  return (
-    <label htmlFor={htmlFor} className={\`font-semibold \${invalid ? 'text-red-600' : 'text-purple-700'}\`}>
-      {children}
-      {required && <span className="text-red-500 ml-1">*</span>}
-    </label>
   );
 }
 
 setupSnowForm({
   translate: (key) => key,
   components: {
-    text: CustomInput,
-    email: (props) => <CustomInput {...props} type="email" />,
-    password: (props) => <CustomInput {...props} type="password" />,
-    // ... other components
+    text: MyInput,
+    email: (props) => <MyInput {...props} type="email" />,
+    password: (props) => <MyInput {...props} type="password" />,
+    textarea: MyTextarea,
+    select: MySelect,
+    checkbox: MyCheckbox,
+    number: MyNumberInput,
+    date: MyDatePicker,
   },
   formUI: {
-    label: CustomLabel,
-    description: ({ children }) => <p className="text-purple-500">{children}</p>,
-    errorMessage: ({ message }) => <p className="text-red-600">{message}</p>,
+    label: ({ children, required, htmlFor }) => (
+      <label htmlFor={htmlFor} className="text-sm font-medium text-gray-700">
+        {children}
+        {required && <span className="text-red-500 ml-1">*</span>}
+      </label>
+    ),
+    description: ({ children }) => <p className="text-sm text-gray-500">{children}</p>,
+    errorMessage: ({ message }) => <p className="text-sm text-red-600">{message}</p>,
   },
   submitButton: ({ loading, disabled, children }) => (
     <button
       type="submit"
       disabled={disabled || loading}
-      className="px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white
-                 font-semibold rounded-lg disabled:opacity-50"
+      className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white
+                 font-medium rounded-md disabled:opacity-50"
     >
-      {loading ? 'Processing...' : children}
+      {loading ? 'Loading...' : children}
     </button>
   ),
-});`;
-  }
-
-  return `// Run once at app startup (e.g., app/setup.ts, _app.tsx, main.tsx)
-import {
-  setupSnowForm,
-  DEFAULT_COMPONENTS,
-  DEFAULT_FORM_UI,
-  DEFAULT_SUBMIT_BUTTON,
-} from '@snowpact/react-rhf-zod-form';
-import '@snowpact/react-rhf-zod-form/styles.css'; // Required for default components
-
-setupSnowForm({
-  translate: (key) => key,
-  components: DEFAULT_COMPONENTS,
-  formUI: DEFAULT_FORM_UI,
-  submitButton: DEFAULT_SUBMIT_BUTTON,
 });`;
 }
 

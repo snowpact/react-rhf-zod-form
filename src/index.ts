@@ -33,13 +33,7 @@ export {
   setOnErrorBehavior,
   // Styles
   setFormStyles,
-  // Default constants
-  DEFAULT_FORM_UI,
-  DEFAULT_SUBMIT_BUTTON,
 } from './registry';
-
-// Default components (requires CSS import)
-export { DEFAULT_COMPONENTS } from './components';
 
 // =============================================================================
 // Utilities

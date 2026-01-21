@@ -68,9 +68,11 @@ export function SnowFormField<
   if (override?.render) {
     return (
       <FormItem className={styles?.fieldWrapper}>
-        <FormLabel className={styles?.label} required={isRequired}>
-          {label}
-        </FormLabel>
+        {!override.hideLabel && (
+          <FormLabel className={styles?.label} required={isRequired}>
+            {label}
+          </FormLabel>
+        )}
         <FormControl>
           {override.render({
             value: field.value,
@@ -92,7 +94,7 @@ export function SnowFormField<
   if (!Component) {
     console.warn(
       `[SnowForm] No component registered for type "${fieldType}". ` +
-        `Use setupSnowForm({ components: DEFAULT_COMPONENTS }) or register your own.`
+        `Register it via setupSnowForm({ components: { ${fieldType}: YourComponent } }).`
     );
     return null;
   }

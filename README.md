@@ -16,7 +16,7 @@ Automatic form generation from Zod schemas with react-hook-form.
 - **Zero runtime dependencies** - Only peer dependencies (React, Zod, RHF)
 - **Automatic field type detection** - Maps Zod types to form inputs
 - **Schema refinements** - Full support for `refine()` and `superRefine()` cross-field validation
-- **Extensible component registry** - Replace any component with your own (inputs, layout, submit button)
+- **Extensible component registry** - Use your own components (inputs, layout, submit button)
 - **Translation support** - i18next, next-intl, or any translation function
 - **Children pattern** - Full control over layout when needed
 - **TypeScript first** - Full type inference from Zod schemas
@@ -35,19 +35,20 @@ npm install react-hook-form zod @hookform/resolvers
 
 ## Quick Start
 
-### Option 1: With Custom Components (Recommended)
+### 1. Setup (run once at app startup)
 
-For full control, register your own components. **No CSS import needed** - your components handle their own styling.
+Register your components once at app startup (e.g., `app/setup.ts`, `_app.tsx`, or `main.tsx`).
 
 ```tsx
-// Run once at app startup (e.g., app/setup.ts, _app.tsx, main.tsx)
 import { setupSnowForm } from '@snowpact/react-rhf-zod-form';
 import type { RegisteredComponentProps, FormUILabelProps } from '@snowpact/react-rhf-zod-form';
 
 // Example custom input component
-function MyInput({ value, onChange, placeholder, disabled, className }: RegisteredComponentProps<string>) {
+function MyInput({ value, onChange, placeholder, disabled, className, name }: RegisteredComponentProps<string>) {
   return (
     <input
+      id={name}
+      name={name}
       type="text"
       value={value ?? ''}
       onChange={(e) => onChange(e.target.value)}
@@ -70,11 +71,17 @@ function MyLabel({ children, required, invalid, htmlFor }: FormUILabelProps) {
 
 setupSnowForm({
   translate: (key) => key,
+  // Essential components (a warning is logged if any are missing)
   components: {
     text: MyInput,
     email: (props) => <MyInput {...props} type="email" />,
     password: (props) => <MyInput {...props} type="password" />,
-    // ... other components
+    textarea: MyTextarea,
+    select: MySelect,
+    checkbox: MyCheckbox,
+    number: MyNumberInput,
+    date: MyDatePicker,
+    // Optional: radio, time, datetime-local, tel, url, color, file
   },
   formUI: {
     label: MyLabel,
@@ -92,53 +99,6 @@ setupSnowForm({
     label: 'text-sm font-medium',   // Applied to labels
     description: 'text-xs text-gray-500', // Applied to descriptions
     errorMessage: 'text-xs text-red-500', // Applied to error messages
-  },
-});
-```
-
-### Option 2: With Default Components (Quick Start)
-
-Use SnowForm's built-in components for quick prototyping. **Requires CSS import.**
-
-```tsx
-import {
-  setupSnowForm,
-  DEFAULT_COMPONENTS,
-  DEFAULT_SUBMIT_BUTTON,
-} from '@snowpact/react-rhf-zod-form';
-import '@snowpact/react-rhf-zod-form/styles.css'; // Required for default components
-
-setupSnowForm({
-  translate: (key) => key,
-  components: DEFAULT_COMPONENTS,
-  submitButton: DEFAULT_SUBMIT_BUTTON,
-  styles: {
-    form: 'space-y-4',
-    formItem: 'grid gap-2',
-    label: 'text-sm font-medium',
-    description: 'text-xs text-gray-500',
-    errorMessage: 'text-xs text-red-500',
-  },
-});
-```
-
-### Option 3: Mix & Match
-
-Extend default components with your own. **Requires CSS import for defaults.**
-
-```tsx
-import { setupSnowForm, DEFAULT_COMPONENTS } from '@snowpact/react-rhf-zod-form';
-import '@snowpact/react-rhf-zod-form/styles.css';
-
-setupSnowForm({
-  translate: (key) => key,
-  components: {
-    ...DEFAULT_COMPONENTS,
-    text: MyCustomInput, // Override just this one
-  },
-  submitButton: MyCustomButton,
-  formUI: {
-    label: MyCustomLabel, // Override just the label
   },
 });
 ```
@@ -215,6 +175,7 @@ import i18next from 'i18next';
 
 setupSnowForm({
   translate: i18next.t.bind(i18next),
+  components: { /* ... */ },
 });
 ```
 
@@ -229,66 +190,15 @@ function SetupProvider({ children }) {
   const t = useTranslations('form');
 
   useEffect(() => {
-    setupSnowForm({ translate: t });
+    setupSnowForm({
+      translate: t,
+      components: { /* ... */ },
+    });
   }, [t]);
 
   return children;
 }
 ```
-
-## Styling
-
-### Using Default Components
-
-When using `DEFAULT_COMPONENTS`, `DEFAULT_FORM_UI`, or `DEFAULT_SUBMIT_BUTTON`, you **must** import the CSS:
-
-```tsx
-import '@snowpact/react-rhf-zod-form/styles.css';
-```
-
-This provides basic styling. The styles are minimal and work out of the box.
-
-### Using Custom Components (No CSS needed)
-
-When you register your own components, **no CSS import is needed**. Your components handle their own styling. This is the recommended approach as it allows you to use your own design system without any CSS override gymnastics.
-
-```tsx
-// No CSS import needed!
-setupSnowForm({
-  translate: (key) => key,
-  components: {
-    text: MyInput,
-    select: MySelect,
-    textarea: MyTextarea,
-    checkbox: MyCheckbox,
-  },
-  formUI: {
-    label: MyLabel,
-    description: MyDescription,
-    errorMessage: MyErrorMessage,
-  },
-  submitButton: MyButton,
-});
-```
-
-### CSS Classes (for Default Styles)
-
-If using the default styles, these class names are available for additional customization:
-
-| Class                    | Description      |
-| ------------------------ | ---------------- |
-| `.snow-form`             | Form container   |
-| `.snow-form-item`        | Field wrapper    |
-| `.snow-form-label`       | Field label      |
-| `.snow-form-label-error` | Label with error |
-| `.snow-form-description` | Help text        |
-| `.snow-form-message`     | Error message    |
-| `.snow-input`            | Text inputs      |
-| `.snow-textarea`         | Textarea         |
-| `.snow-select`           | Select dropdown  |
-| `.snow-checkbox`         | Checkbox         |
-| `.snow-radio`            | Radio buttons    |
-| `.snow-form-submit-btn`  | Submit button    |
 
 ## Schema Refinements
 
@@ -522,16 +432,6 @@ interface SnowFormProps<TSchema, TResponse = unknown> {
 | `setFormStyles(styles)`              | Set CSS classes for form and formItem          |
 | `normalizeDateToISO(date)`           | Convert date to ISO string                     |
 
-### Exported Constants
-
-| Constant                | Description                                             |
-| ----------------------- | ------------------------------------------------------- |
-| `DEFAULT_COMPONENTS`    | Default input components (text, select, checkbox, etc.) |
-| `DEFAULT_FORM_UI`       | Default form UI components (label, description, error)  |
-| `DEFAULT_SUBMIT_BUTTON` | Default submit button component                         |
-
-> **Note:** When using these constants, import `@snowpact/react-rhf-zod-form/styles.css`.
-
 ### Exported Types
 
 ```typescript
@@ -554,58 +454,6 @@ import type {
   FormUIErrorMessageProps,
 } from '@snowpact/react-rhf-zod-form';
 ```
-
-## Migration from v1.x
-
-Version 2.0 introduces a unified setup API. Here's how to migrate:
-
-### Before (v1.x)
-
-```tsx
-import {
-  setTranslationHook,
-  registerFormUIStyles,
-  setOnErrorBehavior,
-  registerComponents,
-} from '@snowpact/react-rhf-zod-form';
-
-setTranslationHook(() => {
-  const { t } = useTranslation('form');
-  return { t };
-});
-
-registerFormUIStyles({
-  form: 'space-y-4',
-  formItem: 'grid gap-2',
-  // ...
-});
-
-setOnErrorBehavior((formRef) => {
-  formRef?.scrollIntoView({ behavior: 'smooth' });
-});
-
-registerComponents({ text: MyInput });
-```
-
-### After (v2.0)
-
-```tsx
-import { setupSnowForm } from '@snowpact/react-rhf-zod-form';
-import '@snowpact/react-rhf-zod-form/styles.css';
-
-setupSnowForm({
-  translate: i18next.t.bind(i18next), // Function instead of hook
-
-  components: {
-    text: MyInput,
-  },
-
-  onError: (formRef) => {
-    formRef?.scrollIntoView({ behavior: 'smooth' });
-  },
-});
-```
-
 
 ## License
 

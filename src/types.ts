@@ -80,9 +80,9 @@ export interface FieldRenderProps<TValue = unknown> {
 }
 
 /**
- * Override configuration for individual fields
+ * Base field configuration shared between typed and permissive versions
  */
-export interface FieldOverride<TValue = unknown> {
+export interface BaseFieldConfig {
   /** Override field label (default: translated from field key) */
   label?: string;
   /** Help text displayed below the field */
@@ -101,6 +101,14 @@ export interface FieldOverride<TValue = unknown> {
   emptyAsUndefined?: boolean;
   /** Convert empty/null to 0 for number fields */
   emptyAsZero?: boolean;
+  /** Hide the label (useful for custom render with inline label) */
+  hideLabel?: boolean;
+}
+
+/**
+ * Override configuration for individual fields (typed version)
+ */
+export interface FieldOverride<TValue = unknown> extends BaseFieldConfig {
   /** Custom render function - replaces default component */
   render?: (props: FieldRenderProps<TValue>) => ReactElement;
   /** Additional props passed to the component */
@@ -111,16 +119,7 @@ export interface FieldOverride<TValue = unknown> {
  * Permissive field config for SnowForm compatibility
  * Uses `any` types to match flexible usage patterns
  */
-export interface FieldConfig {
-  label?: string;
-  description?: string;
-  placeholder?: string;
-  disabled?: boolean;
-  type?: FieldType;
-  options?: FieldOption[];
-  emptyAsNull?: boolean;
-  emptyAsUndefined?: boolean;
-  emptyAsZero?: boolean;
+export interface FieldConfig extends BaseFieldConfig {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   render?: (field: { value: any; onChange: (value: any) => void; error?: any }) => ReactElement;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

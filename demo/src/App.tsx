@@ -1,62 +1,35 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { z } from 'zod';
 import {
   SnowForm,
   setupSnowForm,
   resetSnowForm,
-  DEFAULT_COMPONENTS,
-  DEFAULT_FORM_UI,
-  DEFAULT_SUBMIT_BUTTON,
 } from '../../src';
-import '../../src/styles/index.css'; // Required for default components
 import {
   CodePanel,
   ConfigPanel,
   SubmittedDataDisplay,
   type DemoConfig,
-  type ComponentMode,
   CUSTOM_COMPONENTS,
   CUSTOM_FORM_UI,
   CUSTOM_SUBMIT_BUTTON,
 } from './components';
 
-// Setup function based on mode
-function setupForMode(mode: ComponentMode) {
-  resetSnowForm();
-
-  if (mode === 'default') {
-    setupSnowForm({
-      translate: key => key,
-      components: DEFAULT_COMPONENTS,
-      formUI: DEFAULT_FORM_UI,
-      submitButton: DEFAULT_SUBMIT_BUTTON,
-      onError: (formRef, errors) => {
-        const firstErrorField = Object.keys(errors)[0];
-        if (firstErrorField) {
-          const element = formRef?.querySelector(`[name="${firstErrorField}"]`);
-          element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-      },
-    });
-  } else {
-    setupSnowForm({
-      translate: key => key,
-      components: CUSTOM_COMPONENTS,
-      formUI: CUSTOM_FORM_UI,
-      submitButton: CUSTOM_SUBMIT_BUTTON,
-      onError: (formRef, errors) => {
-        const firstErrorField = Object.keys(errors)[0];
-        if (firstErrorField) {
-          const element = formRef?.querySelector(`[name="${firstErrorField}"]`);
-          element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-      },
-    });
-  }
-}
-
-// Initial setup
-setupForMode('custom');
+// Setup with custom components
+resetSnowForm();
+setupSnowForm({
+  translate: key => key,
+  components: CUSTOM_COMPONENTS,
+  formUI: CUSTOM_FORM_UI,
+  submitButton: CUSTOM_SUBMIT_BUTTON,
+  onError: (formRef, errors) => {
+    const firstErrorField = Object.keys(errors)[0];
+    if (firstErrorField) {
+      const element = formRef?.querySelector(`[name="${firstErrorField}"]`);
+      element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  },
+});
 
 // Complete schema showcasing all field types
 const schema = z.object({
@@ -99,18 +72,11 @@ export function App() {
   const [asyncData, setAsyncData] = useState<Partial<FormData> | null>(null);
   const [isLoadingAsync, setIsLoadingAsync] = useState(false);
   const [config, setConfig] = useState<DemoConfig>({
-    componentMode: 'custom',
     renderMode: 'auto',
     simulateSlowSubmission: false,
     simulateEndpointError: false,
     showDebugMode: true,
   });
-
-  // Re-setup SnowForm when component mode changes
-  useEffect(() => {
-    setupForMode(config.componentMode);
-    setFormKey(prev => prev + 1); // Force form re-render
-  }, [config.componentMode]);
 
   const handleSubmit = async (data: FormData) => {
     if (config.simulateSlowSubmission) {
@@ -212,8 +178,18 @@ export function App() {
           ),
         },
         acceptTerms: {
-          label: 'I accept the terms and conditions',
-          type: 'checkbox' as const,
+          hideLabel: true,
+          render: ({ value, onChange }: { value: boolean; onChange: (v: boolean) => void }) => (
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={value ?? false}
+                onChange={e => onChange(e.target.checked)}
+                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              />
+              <span className="text-sm">I accept the terms and conditions</span>
+            </label>
+          ),
         },
       },
     };

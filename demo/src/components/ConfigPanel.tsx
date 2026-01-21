@@ -1,4 +1,4 @@
-import { type DemoConfig, type RenderMode, type ComponentMode } from './types';
+import { type DemoConfig, type RenderMode } from './types';
 
 interface ConfigPanelProps {
   config: DemoConfig;
@@ -31,40 +31,6 @@ function ConfigCheckbox({
         <p className="text-sm text-gray-400">{description}</p>
       </div>
     </label>
-  );
-}
-
-function SetupModeSelector({
-  value,
-  onChange,
-}: {
-  value: ComponentMode;
-  onChange: (mode: ComponentMode) => void;
-}) {
-  const modes: { value: ComponentMode; label: string; description: string; color: string }[] = [
-    { value: 'custom', label: 'Custom (Recommended)', description: 'Your own components, no CSS needed', color: 'purple' },
-    { value: 'default', label: 'With Defaults', description: 'Built-in components with CSS', color: 'blue' },
-  ];
-
-  return (
-    <div className="flex gap-2">
-      {modes.map(mode => (
-        <button
-          key={mode.value}
-          onClick={() => onChange(mode.value)}
-          className={`flex-1 px-3 py-2 rounded text-sm font-medium transition-all ${
-            value === mode.value
-              ? mode.color === 'purple'
-                ? 'bg-purple-600 text-white'
-                : 'bg-blue-600 text-white'
-              : 'bg-gray-600 text-gray-300 hover:bg-gray-500'
-          }`}
-          title={mode.description}
-        >
-          {mode.label}
-        </button>
-      ))}
-    </div>
   );
 }
 
@@ -110,22 +76,8 @@ export function ConfigPanel({
     <div className="bg-gray-700 text-white p-4 h-full overflow-y-auto">
       <h2 className="text-lg font-semibold mb-4 border-b border-gray-500 pb-2">Config Panel</h2>
 
-      {/* Setup Mode Section */}
-      <div className="mb-6">
-        <h3 className="text-sm font-semibold text-gray-300 mb-3">Setup Mode</h3>
-        <SetupModeSelector
-          value={config.componentMode}
-          onChange={mode => onConfigChange('componentMode', mode)}
-        />
-        <p className="text-xs text-gray-400 mt-2">
-          {config.componentMode === 'default'
-            ? 'Using built-in components (requires CSS import)'
-            : 'Using custom components (no CSS needed)'}
-        </p>
-      </div>
-
       {/* Render Mode Section */}
-      <div className="mb-6 pt-4 border-t border-gray-500">
+      <div className="mb-6">
         <h3 className="text-sm font-semibold text-gray-300 mb-3">Render Mode</h3>
         <RenderModeSelector
           value={config.renderMode}

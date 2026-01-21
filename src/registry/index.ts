@@ -11,9 +11,6 @@ import {
   hasRegisteredComponent,
   getRegisteredTypes,
   clearRegistry,
-  DefaultSubmitButton,
-  DEFAULT_FORM_UI,
-  DEFAULT_SUBMIT_BUTTON,
 } from './componentRegistry';
 
 import {
@@ -69,8 +66,15 @@ export interface SetupSnowFormOptions {
   translate: TranslationFunction;
 
   /**
-   * Custom components to register
-   * Keys are field types, values are React components
+   * Components to register for form fields.
+   *
+   * **Essential types** (recommended for most forms):
+   * - `text`, `email`, `password`, `textarea`, `select`, `checkbox`, `number`, `date`
+   *
+   * **Optional types** (register as needed):
+   * - `radio`, `time`, `datetime-local`, `tel`, `url`, `color`, `file`, `hidden`
+   *
+   * A warning is logged if essential types are missing.
    *
    * @example
    * ```typescript
@@ -78,8 +82,13 @@ export interface SetupSnowFormOptions {
    *   translate: t,
    *   components: {
    *     text: MyInput,
+   *     email: (props) => <MyInput {...props} type="email" />,
+   *     password: (props) => <MyInput {...props} type="password" />,
    *     textarea: MyTextarea,
    *     select: MySelect,
+   *     checkbox: MyCheckbox,
+   *     number: MyNumberInput,
+   *     date: MyDatePicker,
    *   },
    * });
    * ```
@@ -149,13 +158,12 @@ export interface SetupSnowFormOptions {
   /**
    * CSS classes for form layout and UI elements
    * Use this to apply consistent styling across all forms.
-   * These classes are added to DEFAULT_FORM_UI components.
+   * These classes are added to the fallback form UI components.
    *
    * @example
    * ```typescript
    * setupSnowForm({
    *   translate: t,
-   *   formUI: DEFAULT_FORM_UI,
    *   styles: {
    *     form: 'space-y-4',
    *     formItem: 'grid gap-2',
@@ -232,7 +240,7 @@ export function setupSnowForm(options: SetupSnowFormOptions): void {
   // Set translation function (required)
   setTranslationFunction(options.translate);
 
-  // Register components (optional)
+  // Register components
   if (options.components) {
     registerComponents(options.components);
   }
@@ -297,9 +305,6 @@ export {
   hasRegisteredComponent,
   getRegisteredTypes,
   clearRegistry,
-  DefaultSubmitButton,
-  DEFAULT_FORM_UI,
-  DEFAULT_SUBMIT_BUTTON,
 };
 
 // Translation registry
