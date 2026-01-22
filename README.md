@@ -390,7 +390,7 @@ For full layout control, use the children render pattern:
       {form.watch('showBio') && renderField('bio')}
 
       <div className="col-span-2">
-        {renderSubmitButton()}
+        {renderSubmitButton({ children: 'Create Account' })}
       </div>
     </div>
   )}

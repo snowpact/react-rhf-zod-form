@@ -139,9 +139,9 @@ const TestErrorMessage = ({ message }: FormUIErrorMessageProps) => (
   <p className="snow-form-message" role="alert">{message}</p>
 );
 
-const TestSubmitButton = ({ loading, disabled }: SubmitButtonProps) => (
-  <button type="submit" disabled={disabled || loading} className="snow-form-submit-btn">
-    {loading ? 'Loading...' : 'Submit'}
+const TestSubmitButton = ({ loading, disabled, children, className }: SubmitButtonProps) => (
+  <button type="submit" disabled={disabled || loading} className={cn('snow-form-submit-btn', className)}>
+    {loading ? 'Loading...' : children}
   </button>
 );
 

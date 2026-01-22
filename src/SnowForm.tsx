@@ -54,7 +54,7 @@ import {
  *     <>
  *       {renderField('email', 'password')}
  *       {form.watch('showBio') && renderField('bio')}
- *       {renderSubmitButton()}
+ *       {renderSubmitButton({ children: 'Create Account' })}
  *     </>
  *   )}
  * </SnowForm>
@@ -252,7 +252,7 @@ export function SnowForm<TSchema extends ZodObjectOrEffects, TResponse = unknown
   // ==========================================================================
 
   const renderSubmitButton = useCallback(
-    (options?: { disabled?: boolean }): ReactNode => {
+    (options?: { disabled?: boolean; className?: string; children?: ReactNode }): ReactNode => {
       const SubmitButton = getRegisteredSubmitButton();
       const isSubmitting = form.formState.isSubmitting;
       const isDisabled = options?.disabled || isFetchingDefaults || hasFetchError || isSubmitting;
@@ -261,13 +261,21 @@ export function SnowForm<TSchema extends ZodObjectOrEffects, TResponse = unknown
         console.warn('[SnowForm] No submit button registered. Use setupSnowForm({ submitButton: ... })');
         // Minimal fallback
         return (
-          <button type="submit" disabled={isDisabled} className="snow-form-submit-btn">
-            {isSubmitting ? 'Loading...' : t('submit')}
+          <button type="submit" disabled={isDisabled} className={cn('snow-form-submit-btn', options?.className)}>
+            {isSubmitting ? 'Loading...' : (options?.children ?? t('submit'))}
           </button>
         );
       }
 
-      return <SubmitButton loading={isSubmitting} disabled={isDisabled} />;
+      return (
+        <SubmitButton
+          loading={isSubmitting}
+          disabled={isDisabled}
+          className={cn('snow-form-submit-btn', options?.className)}
+        >
+          {options?.children ?? t('submit')}
+        </SubmitButton>
+      );
     },
     [form.formState.isSubmitting, isFetchingDefaults, hasFetchError, t]
   );

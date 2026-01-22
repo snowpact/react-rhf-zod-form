@@ -172,6 +172,8 @@ export type RegisterableComponent = React.ComponentType<RegisteredComponentProps
 export interface SubmitButtonProps {
   loading?: boolean;
   disabled?: boolean;
+  children?: ReactNode;
+  className?: string;
 }
 
 /**
@@ -227,7 +229,7 @@ export interface SnowFormHelpers<T extends FieldValues> {
   /** Render specific fields by key */
   renderField: (...keys: Array<keyof T>) => ReactNode;
   /** Render the submit button */
-  renderSubmitButton: (options?: { disabled?: boolean }) => ReactNode;
+  renderSubmitButton: (options?: { disabled?: boolean; className?: string; children?: ReactNode }) => ReactNode;
   /** Access the full react-hook-form instance (includes watch, setValue, etc.) */
   form: UseFormReturn<T>;
 }

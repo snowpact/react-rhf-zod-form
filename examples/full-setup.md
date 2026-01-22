@@ -172,10 +172,10 @@ function DatePickerAdapter({
   );
 }
 
-function ShadcnSubmitButton({ loading, disabled }: SubmitButtonProps) {
+function ShadcnSubmitButton({ loading, disabled, children, className }: SubmitButtonProps) {
   return (
-    <Button type="submit" disabled={disabled || loading}>
-      {loading ? 'Loading...' : 'Submit'}
+    <Button type="submit" disabled={disabled || loading} className={className}>
+      {loading ? 'Loading...' : children}
     </Button>
   );
 }
