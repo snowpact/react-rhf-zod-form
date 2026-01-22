@@ -262,13 +262,13 @@ describe('SnowForm', () => {
           {({ renderField, renderSubmitButton }) => (
             <>
               {renderField('name')}
-              {renderSubmitButton({ children: 'Save Changes' })}
+              {renderSubmitButton()}
             </>
           )}
         </SnowForm>
       );
 
-      expect(screen.getByRole('button', { name: /save changes/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /submit/i })).toBeInTheDocument();
     });
 
     it('should provide watch helper', async () => {
@@ -357,9 +357,9 @@ describe('SnowForm', () => {
     it('should use registered submit button', () => {
       const schema = z.object({ name: z.string() });
 
-      registerSubmitButton(({ children, loading }) => (
+      registerSubmitButton(({ loading }) => (
         <button data-testid="custom-submit" disabled={loading}>
-          {loading ? 'Processing...' : children}
+          {loading ? 'Processing...' : 'Submit'}
         </button>
       ));
 
