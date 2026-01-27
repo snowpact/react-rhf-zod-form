@@ -1,7 +1,9 @@
 import { useCallback } from 'react';
 import type { ControllerRenderProps, FieldValues, Path } from 'react-hook-form';
 
-import { FormControl, FormDescription, FormItem, FormLabel, FormMessage, useFormField } from './FormProvider';
+import { ArrayFieldRenderer } from './ArrayFieldRenderer';
+import { FieldWrapper } from './FieldWrapper';
+import { FormControl, useFormField } from './FormProvider';
 import { getRegisteredComponent } from './registry/componentRegistry';
 import { getT } from './registry/translationRegistry';
 import type { FieldConfig, RegisteredComponentProps, SchemaFieldInfo } from './types';
@@ -67,12 +69,13 @@ export function SnowFormField<
   // FieldConfig render receives { value, onChange, error } for custom components
   if (override?.render) {
     return (
-      <FormItem className={styles?.fieldWrapper}>
-        {!override.hideLabel && (
-          <FormLabel className={styles?.label} required={isRequired}>
-            {label}
-          </FormLabel>
-        )}
+      <FieldWrapper
+        label={label}
+        isRequired={isRequired}
+        hideLabel={override.hideLabel}
+        description={override.description}
+        styles={styles}
+      >
         <FormControl>
           {override.render({
             value: field.value,
@@ -80,11 +83,23 @@ export function SnowFormField<
             error: error?.message,
           })}
         </FormControl>
-        {override?.description && (
-          <FormDescription className={styles?.description}>{override.description}</FormDescription>
-        )}
-        <FormMessage className={styles?.error} />
-      </FormItem>
+      </FieldWrapper>
+    );
+  }
+
+  // Array fields
+  if (fieldInfo.baseType === 'array' && fieldInfo.arrayElementInfo) {
+    return (
+      <ArrayFieldRenderer
+        name={name}
+        label={label}
+        isRequired={isRequired}
+        isDisabled={isDisabled}
+        arrayElementInfo={fieldInfo.arrayElementInfo}
+        override={override}
+        field={field}
+        styles={styles}
+      />
     );
   }
 
@@ -137,17 +152,15 @@ export function SnowFormField<
   };
 
   return (
-    <FormItem className={styles?.fieldWrapper}>
-      <FormLabel className={styles?.label} required={isRequired}>
-        {label}
-      </FormLabel>
+    <FieldWrapper
+      label={label}
+      isRequired={isRequired}
+      description={override?.description}
+      styles={styles}
+    >
       <FormControl>
         <Component {...componentProps} />
       </FormControl>
-      {override?.description && (
-        <FormDescription className={styles?.description}>{override.description}</FormDescription>
-      )}
-      <FormMessage className={styles?.error} />
-    </FormItem>
+    </FieldWrapper>
   );
 }

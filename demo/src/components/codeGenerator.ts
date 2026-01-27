@@ -58,6 +58,13 @@ setupSnowForm({
       {loading ? 'Loading...' : children}
     </button>
   ),
+  styles: {
+    form: 'space-y-4',
+    formItem: 'space-y-1',
+    button: 'px-2 py-1 text-sm border border-gray-300 rounded',
+    arrayContainer: 'flex flex-col gap-2',
+    arrayItem: 'flex items-center gap-2',
+  },
 });`;
 }
 
@@ -129,6 +136,8 @@ const schema = z.object({
   bio: z.string().optional(),
   role: z.enum(['admin', 'user', 'guest']),
   satisfaction: z.number().min(1).max(5).optional(),
+  tags: z.array(z.string()).default([]),
+  interests: z.array(z.enum(['tech', 'design', 'business', 'marketing'])).default([]),
   acceptTerms: z.boolean().refine(val => val === true, 'Required'),
 });
 
@@ -175,6 +184,8 @@ function MyForm() {
             </div>
           ),
         },
+        tags: { label: 'Tags', placeholder: 'Enter a tag' },
+        interests: { label: 'Interests', description: 'Select your areas of interest' },
         acceptTerms: { label: 'I accept the terms' },
       }}
     />

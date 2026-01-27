@@ -305,10 +305,16 @@ export type SchemaFieldBaseType = 'string' | 'number' | 'boolean' | 'enum' | 'ar
  * Information extracted from a schema field
  */
 export interface SchemaFieldInfo {
+  /** The base Zod type (string, number, boolean, enum, array, etc.) */
   baseType: SchemaFieldBaseType;
+  /** Whether the field is optional (z.optional() or has .default()) */
   isOptional: boolean;
+  /** Whether the field has .email() validation */
   isEmail: boolean;
+  /** For enum types: the possible values */
   enumValues?: string[];
+  /** For array fields: info about the element type */
+  arrayElementInfo?: SchemaFieldInfo;
 }
 
 // =============================================================================

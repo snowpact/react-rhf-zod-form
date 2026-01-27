@@ -477,6 +477,213 @@ describe('SnowFormField', () => {
   });
 
   // ===========================================================================
+  // Array Fields
+  // ===========================================================================
+
+  describe('Array Fields', () => {
+    it('should render array field with add button', () => {
+      renderSnowFormField({
+        fieldInfo: {
+          baseType: 'array',
+          isOptional: true,
+          isEmail: false,
+          arrayElementInfo: { baseType: 'string', isOptional: false, isEmail: false },
+        },
+        defaultValue: [],
+      });
+
+      expect(screen.getByRole('button', { name: /add item/i })).toBeInTheDocument();
+    });
+
+    it('should render array items with inputs and remove buttons', () => {
+      renderSnowFormField({
+        fieldInfo: {
+          baseType: 'array',
+          isOptional: true,
+          isEmail: false,
+          arrayElementInfo: { baseType: 'string', isOptional: false, isEmail: false },
+        },
+        defaultValue: ['tag1', 'tag2'],
+      });
+
+      const inputs = screen.getAllByRole('textbox');
+      expect(inputs).toHaveLength(2);
+
+      const removeButtons = screen.getAllByRole('button', { name: /remove item/i });
+      expect(removeButtons).toHaveLength(2);
+    });
+
+    it('should add new item when clicking add button', async () => {
+      const user = userEvent.setup();
+      let capturedValue: unknown;
+
+      function CaptureForm() {
+        const form = useForm({ defaultValues: { testField: ['existing'] } });
+
+        return (
+          <Form {...form}>
+            <FormField
+              name="testField"
+              render={({ field }) => {
+                capturedValue = field.value;
+                return (
+                  <SnowFormField
+                    name="testField"
+                    fieldInfo={{
+                      baseType: 'array',
+                      isOptional: true,
+                      isEmail: false,
+                      arrayElementInfo: { baseType: 'string', isOptional: false, isEmail: false },
+                    }}
+                    field={field}
+                  />
+                );
+              }}
+            />
+          </Form>
+        );
+      }
+
+      render(<CaptureForm />);
+
+      const addButton = screen.getByRole('button', { name: /add item/i });
+      await user.click(addButton);
+
+      expect(capturedValue).toEqual(['existing', '']);
+    });
+
+    it('should remove item when clicking remove button', async () => {
+      const user = userEvent.setup();
+      let capturedValue: unknown;
+
+      function CaptureForm() {
+        const form = useForm({ defaultValues: { testField: ['first', 'second'] } });
+
+        return (
+          <Form {...form}>
+            <FormField
+              name="testField"
+              render={({ field }) => {
+                capturedValue = field.value;
+                return (
+                  <SnowFormField
+                    name="testField"
+                    fieldInfo={{
+                      baseType: 'array',
+                      isOptional: true,
+                      isEmail: false,
+                      arrayElementInfo: { baseType: 'string', isOptional: false, isEmail: false },
+                    }}
+                    field={field}
+                  />
+                );
+              }}
+            />
+          </Form>
+        );
+      }
+
+      render(<CaptureForm />);
+
+      const removeButtons = screen.getAllByRole('button', { name: /remove item/i });
+      await user.click(removeButtons[0]);
+
+      expect(capturedValue).toEqual(['second']);
+    });
+
+    it('should render array of numbers with number inputs', () => {
+      renderSnowFormField({
+        fieldInfo: {
+          baseType: 'array',
+          isOptional: true,
+          isEmail: false,
+          arrayElementInfo: { baseType: 'number', isOptional: false, isEmail: false },
+        },
+        defaultValue: [1, 2, 3],
+      });
+
+      const inputs = screen.getAllByRole('spinbutton');
+      expect(inputs).toHaveLength(3);
+    });
+
+    it('should render array of enums with select inputs', () => {
+      renderSnowFormField({
+        fieldInfo: {
+          baseType: 'array',
+          isOptional: true,
+          isEmail: false,
+          arrayElementInfo: {
+            baseType: 'enum',
+            isOptional: false,
+            isEmail: false,
+            enumValues: ['option1', 'option2'],
+          },
+        },
+        defaultValue: ['option1'],
+      });
+
+      expect(screen.getByRole('combobox')).toBeInTheDocument();
+    });
+
+    it('should use custom render and bypass array logic', () => {
+      renderSnowFormField({
+        fieldInfo: {
+          baseType: 'array',
+          isOptional: true,
+          isEmail: false,
+          arrayElementInfo: { baseType: 'string', isOptional: false, isEmail: false },
+        },
+        override: {
+          render: ({ value }) => (
+            <div data-testid="custom-array-render">
+              Custom: {JSON.stringify(value)}
+            </div>
+          ),
+        },
+        defaultValue: ['a', 'b'],
+      });
+
+      expect(screen.getByTestId('custom-array-render')).toBeInTheDocument();
+      expect(screen.getByText('Custom: ["a","b"]')).toBeInTheDocument();
+    });
+
+    it('should show description for array fields', () => {
+      renderSnowFormField({
+        fieldInfo: {
+          baseType: 'array',
+          isOptional: true,
+          isEmail: false,
+          arrayElementInfo: { baseType: 'string', isOptional: false, isEmail: false },
+        },
+        override: { description: 'Add your tags here' },
+        defaultValue: [],
+      });
+
+      expect(screen.getByText('Add your tags here')).toBeInTheDocument();
+    });
+
+    it('should disable inputs and buttons when disabled', () => {
+      renderSnowFormField({
+        fieldInfo: {
+          baseType: 'array',
+          isOptional: true,
+          isEmail: false,
+          arrayElementInfo: { baseType: 'string', isOptional: false, isEmail: false },
+        },
+        override: { disabled: true },
+        defaultValue: ['item1'],
+      });
+
+      expect(screen.getByRole('textbox')).toBeDisabled();
+
+      const buttons = screen.getAllByRole('button');
+      buttons.forEach(button => {
+        expect(button).toBeDisabled();
+      });
+    });
+  });
+
+  // ===========================================================================
   // Partial Registration (user only registers some components)
   // ===========================================================================
 

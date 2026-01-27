@@ -16,6 +16,12 @@ export interface FormStyles {
   description?: string;
   /** CSS class for error messages (e.g., 'text-xs text-red-500') */
   errorMessage?: string;
+  /** CSS class for buttons (e.g., array add/remove buttons) */
+  button?: string;
+  /** CSS class for array field container (e.g., 'flex flex-col gap-2') */
+  arrayContainer?: string;
+  /** CSS class for each array item row (e.g., 'flex items-center gap-2') */
+  arrayItem?: string;
 }
 
 let registeredStyles: FormStyles = {};
@@ -74,6 +80,30 @@ export function getDescriptionClass(): string | undefined {
  */
 export function getErrorMessageClass(): string | undefined {
   return registeredStyles.errorMessage;
+}
+
+/**
+ * Get the registered button class
+ * @internal Used by ArrayFieldRenderer
+ */
+export function getButtonClass(): string | undefined {
+  return registeredStyles.button;
+}
+
+/**
+ * Get the registered array container class
+ * @internal Used by ArrayFieldRenderer
+ */
+export function getArrayContainerClass(): string | undefined {
+  return registeredStyles.arrayContainer;
+}
+
+/**
+ * Get the registered array item class
+ * @internal Used by ArrayFieldRenderer
+ */
+export function getArrayItemClass(): string | undefined {
+  return registeredStyles.arrayItem;
 }
 
 /**
