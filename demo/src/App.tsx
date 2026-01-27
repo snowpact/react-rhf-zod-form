@@ -22,6 +22,13 @@ setupSnowForm({
   components: CUSTOM_COMPONENTS,
   formUI: CUSTOM_FORM_UI,
   submitButton: CUSTOM_SUBMIT_BUTTON,
+  styles: {
+    form: 'space-y-4',
+    formItem: 'space-y-1',
+    button: 'px-2 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100',
+    arrayContainer: 'flex flex-col gap-2',
+    arrayItem: 'flex items-center gap-2',
+  },
   onError: (formRef, errors) => {
     const firstErrorField = Object.keys(errors)[0];
     if (firstErrorField) {
@@ -46,6 +53,9 @@ const schema = z.object({
   role: z.enum(['admin', 'user', 'guest']),
   // Custom field type: rating (only shown in custom mode)
   satisfaction: z.number().min(1).max(5).optional(),
+  // Array fields
+  tags: z.array(z.string()).default([]),
+  interests: z.array(z.enum(['tech', 'design', 'business', 'marketing'])).default([]),
   // Checkbox
   acceptTerms: z.boolean().refine(val => val === true, 'You must accept the terms'),
 });
@@ -177,6 +187,16 @@ export function App() {
             </div>
           ),
         },
+        // Array fields
+        tags: {
+          label: 'Tags',
+          description: 'Add tags for your profile',
+          placeholder: 'Enter a tag',
+        },
+        interests: {
+          label: 'Interests',
+          description: 'Select your areas of interest',
+        },
         acceptTerms: {
           hideLabel: true,
           render: ({ value, onChange }: { value: boolean; onChange: (v: boolean) => void }) => (
@@ -211,6 +231,8 @@ export function App() {
               </div>
               {renderField('bio')}
               {renderField('satisfaction')}
+              {renderField('tags')}
+              {renderField('interests')}
               {renderField('acceptTerms')}
               <div className="pt-4">{renderSubmitButton({ children: 'Create Account' })}</div>
             </div>

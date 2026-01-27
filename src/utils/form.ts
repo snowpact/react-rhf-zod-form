@@ -51,6 +51,9 @@ export function initializeDefaultValues<T extends FieldValues>(
           case 'enum':
             acc[key] = undefined;
             break;
+          case 'array':
+            acc[key] = [];
+            break;
           default:
             acc[key] = undefined;
         }

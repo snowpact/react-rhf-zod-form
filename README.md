@@ -99,6 +99,9 @@ setupSnowForm({
     label: 'text-sm font-medium',   // Applied to labels
     description: 'text-xs text-gray-500', // Applied to descriptions
     errorMessage: 'text-xs text-red-500', // Applied to error messages
+    button: 'px-2 py-1 text-sm border rounded', // Applied to array +/× buttons
+    arrayContainer: 'flex flex-col gap-2', // Applied to array field container
+    arrayItem: 'flex items-center gap-2',  // Applied to each array item row
   },
 });
 ```
@@ -142,6 +145,7 @@ function MyForm() {
 | `z.boolean()`        | Checkbox          |
 | `z.date()`           | Date picker       |
 | `z.enum([...])`      | Select            |
+| `z.array(z.T)`       | Array of T inputs |
 
 ### Available Built-in Types (via overrides)
 
@@ -371,6 +375,32 @@ setupSnowForm({
   }}
 />
 ```
+
+## Array Fields (Built-in)
+
+> **Note**: For complex array UIs, we recommend using a custom `render` function instead. The built-in array support is a convenience fallback for simple cases.
+
+SnowForm has basic support for array fields using `z.array()`. The element type determines which component is used for each item:
+
+```tsx
+const schema = z.object({
+  tags: z.array(z.string()).default([]),
+  interests: z.array(z.enum(['tech', 'design', 'business'])).default([]),
+});
+
+<SnowForm
+  schema={schema}
+  overrides={{
+    tags: { label: 'Tags', placeholder: 'Enter a tag' },
+    interests: { label: 'Interests' },
+  }}
+/>
+```
+
+Each array field renders with + and × buttons to add/remove items. Styles can be customized via `setupSnowForm`:
+- `styles.arrayContainer` - Container wrapping all array items
+- `styles.arrayItem` - Each item row (input + remove button)
+- `styles.button` - The +/× buttons
 
 ## Children Pattern
 

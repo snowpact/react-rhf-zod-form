@@ -118,6 +118,7 @@ export function getZodFieldInfo(field: z.ZodTypeAny): SchemaFieldInfo {
   let baseType: SchemaFieldInfo['baseType'] = 'unknown';
   let enumValues: string[] | undefined;
   let isEmail = false;
+  let arrayElementInfo: SchemaFieldInfo | undefined;
 
   if (unwrapped instanceof z.ZodString) {
     baseType = 'string';
@@ -133,6 +134,8 @@ export function getZodFieldInfo(field: z.ZodTypeAny): SchemaFieldInfo {
     baseType = 'date';
   } else if (unwrapped instanceof z.ZodArray) {
     baseType = 'array';
+    // Extract element type info recursively
+    arrayElementInfo = getZodFieldInfo(unwrapped._def.type);
   }
 
   return {
@@ -140,6 +143,7 @@ export function getZodFieldInfo(field: z.ZodTypeAny): SchemaFieldInfo {
     isOptional: isOptional(field),
     isEmail,
     enumValues,
+    arrayElementInfo,
   };
 }
 

@@ -4,3 +4,4 @@ demo-dist/
 *.log
 .DS_Store
 .claude
+.context
