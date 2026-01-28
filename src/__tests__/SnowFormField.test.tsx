@@ -481,7 +481,7 @@ describe('SnowFormField', () => {
   // ===========================================================================
 
   describe('Array Fields', () => {
-    it('should render array field with add button', () => {
+    it('should render array field with input', () => {
       renderSnowFormField({
         fieldInfo: {
           baseType: 'array',
@@ -492,10 +492,10 @@ describe('SnowFormField', () => {
         defaultValue: [],
       });
 
-      expect(screen.getByRole('button', { name: /add item/i })).toBeInTheDocument();
+      expect(screen.getByRole('textbox')).toBeInTheDocument();
     });
 
-    it('should render array items with inputs and remove buttons', () => {
+    it('should render chips with remove buttons for existing items', () => {
       renderSnowFormField({
         fieldInfo: {
           baseType: 'array',
@@ -506,14 +506,17 @@ describe('SnowFormField', () => {
         defaultValue: ['tag1', 'tag2'],
       });
 
-      const inputs = screen.getAllByRole('textbox');
-      expect(inputs).toHaveLength(2);
+      // Only one input for adding new items
+      expect(screen.getAllByRole('textbox')).toHaveLength(1);
 
-      const removeButtons = screen.getAllByRole('button', { name: /remove item/i });
-      expect(removeButtons).toHaveLength(2);
+      // Chips are clickable buttons with the value
+      const chip1 = screen.getByRole('button', { name: /remove tag1/i });
+      const chip2 = screen.getByRole('button', { name: /remove tag2/i });
+      expect(chip1).toBeInTheDocument();
+      expect(chip2).toBeInTheDocument();
     });
 
-    it('should add new item when clicking add button', async () => {
+    it('should add new item when pressing Enter', async () => {
       const user = userEvent.setup();
       let capturedValue: unknown;
 
@@ -546,10 +549,10 @@ describe('SnowFormField', () => {
 
       render(<CaptureForm />);
 
-      const addButton = screen.getByRole('button', { name: /add item/i });
-      await user.click(addButton);
+      const input = screen.getByRole('textbox');
+      await user.type(input, 'new item{Enter}');
 
-      expect(capturedValue).toEqual(['existing', '']);
+      expect(capturedValue).toEqual(['existing', 'new item']);
     });
 
     it('should remove item when clicking remove button', async () => {
@@ -585,13 +588,13 @@ describe('SnowFormField', () => {
 
       render(<CaptureForm />);
 
-      const removeButtons = screen.getAllByRole('button', { name: /remove item/i });
-      await user.click(removeButtons[0]);
+      const chip = screen.getByRole('button', { name: /remove first/i });
+      await user.click(chip);
 
       expect(capturedValue).toEqual(['second']);
     });
 
-    it('should render array of numbers with number inputs', () => {
+    it('should render array of numbers with number input and chips', () => {
       renderSnowFormField({
         fieldInfo: {
           baseType: 'array',
@@ -602,8 +605,13 @@ describe('SnowFormField', () => {
         defaultValue: [1, 2, 3],
       });
 
-      const inputs = screen.getAllByRole('spinbutton');
-      expect(inputs).toHaveLength(3);
+      // Only one number input for adding new items
+      expect(screen.getAllByRole('spinbutton')).toHaveLength(1);
+
+      // Chips are clickable buttons
+      expect(screen.getByRole('button', { name: /remove 1/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /remove 2/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /remove 3/i })).toBeInTheDocument();
     });
 
     it('should render array of enums with select inputs', () => {

@@ -16,12 +16,8 @@ export interface FormStyles {
   description?: string;
   /** CSS class for error messages (e.g., 'text-xs text-red-500') */
   errorMessage?: string;
-  /** CSS class for buttons (e.g., array add/remove buttons) */
-  button?: string;
-  /** CSS class for array field container (e.g., 'flex flex-col gap-2') */
-  arrayContainer?: string;
-  /** CSS class for each array item row (e.g., 'flex items-center gap-2') */
-  arrayItem?: string;
+  /** CSS class for chips container (e.g., 'flex flex-wrap gap-1') */
+  chip?: string;
 }
 
 let registeredStyles: FormStyles = {};
@@ -83,27 +79,11 @@ export function getErrorMessageClass(): string | undefined {
 }
 
 /**
- * Get the registered button class
+ * Get the registered chip class
  * @internal Used by ArrayFieldRenderer
  */
-export function getButtonClass(): string | undefined {
-  return registeredStyles.button;
-}
-
-/**
- * Get the registered array container class
- * @internal Used by ArrayFieldRenderer
- */
-export function getArrayContainerClass(): string | undefined {
-  return registeredStyles.arrayContainer;
-}
-
-/**
- * Get the registered array item class
- * @internal Used by ArrayFieldRenderer
- */
-export function getArrayItemClass(): string | undefined {
-  return registeredStyles.arrayItem;
+export function getChipClass(): string | undefined {
+  return registeredStyles.chip;
 }
 
 /**
