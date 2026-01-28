@@ -99,9 +99,7 @@ setupSnowForm({
     label: 'text-sm font-medium',   // Applied to labels
     description: 'text-xs text-gray-500', // Applied to descriptions
     errorMessage: 'text-xs text-red-500', // Applied to error messages
-    button: 'px-2 py-1 text-sm border rounded', // Applied to array +/× buttons
-    arrayContainer: 'flex flex-col gap-2', // Applied to array field container
-    arrayItem: 'flex items-center gap-2',  // Applied to each array item row
+    chip: 'inline-flex items-center gap-1 px-2 py-1 text-sm bg-blue-100 text-blue-800 rounded-full mr-1 mt-1', // Applied to array chips
   },
 });
 ```
@@ -380,7 +378,11 @@ setupSnowForm({
 
 > **Note**: For complex array UIs, we recommend using a custom `render` function instead. The built-in array support is a convenience fallback for simple cases.
 
-SnowForm has basic support for array fields using `z.array()`. The element type determines which component is used for each item:
+SnowForm supports array fields using `z.array()` with a chip-based UI:
+
+- **String/Number arrays**: Type in the input, press Enter to add a chip
+- **Enum arrays**: Select from dropdown to add a chip (selected options are removed from dropdown)
+- Each chip has a × button to remove it
 
 ```tsx
 const schema = z.object({
@@ -391,16 +393,18 @@ const schema = z.object({
 <SnowForm
   schema={schema}
   overrides={{
-    tags: { label: 'Tags', placeholder: 'Enter a tag' },
-    interests: { label: 'Interests' },
+    tags: { label: 'Tags', placeholder: 'Enter a tag and press Enter' },
+    interests: {
+      label: 'Interests',
+      options: [
+        { value: 'tech', label: 'Technology' },
+        { value: 'design', label: 'Design' },
+        { value: 'business', label: 'Business' },
+      ],
+    },
   }}
 />
 ```
-
-Each array field renders with + and × buttons to add/remove items. Styles can be customized via `setupSnowForm`:
-- `styles.arrayContainer` - Container wrapping all array items
-- `styles.arrayItem` - Each item row (input + remove button)
-- `styles.button` - The +/× buttons
 
 ## Children Pattern
 

@@ -25,9 +25,7 @@ setupSnowForm({
   styles: {
     form: 'space-y-4',
     formItem: 'space-y-1',
-    button: 'px-2 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100',
-    arrayContainer: 'flex flex-col gap-2',
-    arrayItem: 'flex items-center gap-2',
+    chip: 'inline-flex items-center gap-1 px-2 py-1 text-sm bg-blue-100 text-blue-800 rounded-full mr-1 mt-1',
   },
   onError: (formRef, errors) => {
     const firstErrorField = Object.keys(errors)[0];
@@ -190,12 +188,18 @@ export function App() {
         // Array fields
         tags: {
           label: 'Tags',
-          description: 'Add tags for your profile',
+          description: 'Press Enter to add a tag',
           placeholder: 'Enter a tag',
         },
         interests: {
           label: 'Interests',
           description: 'Select your areas of interest',
+          options: [
+            { value: 'tech', label: 'Technology' },
+            { value: 'design', label: 'Design' },
+            { value: 'business', label: 'Business' },
+            { value: 'marketing', label: 'Marketing' },
+          ],
         },
         acceptTerms: {
           hideLabel: true,

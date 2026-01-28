@@ -1,7 +1,9 @@
+import { useState } from 'react';
+
 import { FieldWrapper } from './FieldWrapper';
 import { FormControl } from './FormProvider';
 import { getRegisteredComponent } from './registry/componentRegistry';
-import { getArrayContainerClass, getArrayItemClass, getButtonClass } from './registry/stylesRegistry';
+import { getChipClass } from './registry/stylesRegistry';
 import type { FieldConfig, SchemaFieldInfo } from './types';
 import { resolveFieldType } from './utils';
 
@@ -36,9 +38,46 @@ export function ArrayFieldRenderer({
   field,
   styles,
 }: ArrayFieldRendererProps): React.ReactElement | null {
+  const [inputValue, setInputValue] = useState('');
   const arrayValue: unknown[] = Array.isArray(field.value) ? field.value : [];
+
+  const isEnum = arrayElementInfo.baseType === 'enum';
+  const isNumber = arrayElementInfo.baseType === 'number';
   const elementType = resolveFieldType(arrayElementInfo, override);
   const ElementComponent = getRegisteredComponent(elementType);
+
+  // For enum: filter out already selected options
+  const allOptions = override?.options ?? arrayElementInfo.enumValues?.map(v => ({ label: v, value: v })) ?? [];
+  const availableOptions = isEnum
+    ? allOptions.filter(opt => !arrayValue.includes(opt.value))
+    : [];
+
+  const handleAdd = () => {
+    const trimmed = inputValue.trim();
+    if (!trimmed) return;
+
+    if (isNumber) {
+      const num = Number(trimmed);
+      if (!isNaN(num)) {
+        field.onChange([...arrayValue, num]);
+        setInputValue('');
+      }
+    } else {
+      field.onChange([...arrayValue, trimmed]);
+      setInputValue('');
+    }
+  };
+
+  const handleRemove = (index: number) => {
+    field.onChange(arrayValue.filter((_, i) => i !== index));
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleAdd();
+    }
+  };
 
   if (!ElementComponent) {
     console.warn(
@@ -48,21 +87,12 @@ export function ArrayFieldRenderer({
     return null;
   }
 
-  const elementOptions = arrayElementInfo.enumValues?.map(v => ({ label: v, value: v }));
-
-  const getDefaultValue = () => {
-    switch (arrayElementInfo.baseType) {
-      case 'string':
-        return '';
-      case 'number':
-        return 0;
-      case 'boolean':
-        return false;
-      case 'enum':
-        return arrayElementInfo.enumValues?.[0] ?? '';
-      default:
-        return '';
+  const getDisplayLabel = (value: unknown): string => {
+    if (isEnum) {
+      const option = allOptions.find(opt => opt.value === value);
+      return option?.label ?? String(value);
     }
+    return String(value);
   };
 
   return (
@@ -72,46 +102,52 @@ export function ArrayFieldRenderer({
       description={override?.description}
       styles={styles}
     >
-      <div className={getArrayContainerClass()}>
-        {arrayValue.map((item, index) => (
-          <div key={index} className={getArrayItemClass()}>
-            <FormControl>
-              <ElementComponent
-                value={item}
-                onChange={(newVal: unknown) => {
-                  const newArray = [...arrayValue];
-                  newArray[index] = newVal;
-                  field.onChange(newArray);
-                }}
-                onBlur={field.onBlur}
-                name={`${name}.${index}`}
-                disabled={isDisabled}
-                placeholder={override?.placeholder}
-                options={override?.options ?? elementOptions}
-                className={styles?.input}
-              />
-            </FormControl>
-            <button
-              type="button"
-              onClick={() => field.onChange(arrayValue.filter((_, i) => i !== index))}
-              className={getButtonClass()}
+      <FormControl>
+        {isEnum ? (
+          <ElementComponent
+            value=""
+            onChange={(val: unknown) => {
+              if (val) {
+                field.onChange([...arrayValue, val]);
+              }
+            }}
+            onBlur={field.onBlur}
+            name={name}
+            disabled={isDisabled || availableOptions.length === 0}
+            options={availableOptions}
+            className={styles?.input}
+          />
+        ) : (
+          <div onKeyDown={handleKeyDown}>
+            <ElementComponent
+              value={isNumber ? (inputValue === '' ? '' : Number(inputValue)) : inputValue}
+              onChange={(val: unknown) => setInputValue(String(val ?? ''))}
+              onBlur={field.onBlur}
+              name={name}
               disabled={isDisabled}
-              aria-label="Remove item"
-            >
-              ×
-            </button>
+              placeholder={override?.placeholder}
+              className={styles?.input}
+            />
           </div>
-        ))}
-        <button
-          type="button"
-          onClick={() => field.onChange([...arrayValue, getDefaultValue()])}
-          className={getButtonClass()}
-          disabled={isDisabled}
-          aria-label="Add item"
-        >
-          +
-        </button>
-      </div>
+        )}
+      </FormControl>
+
+      {arrayValue.length > 0 && (
+        <div>
+          {arrayValue.map((item, index) => (
+            <button
+              key={index}
+              type="button"
+              onClick={() => handleRemove(index)}
+              disabled={isDisabled}
+              className={getChipClass()}
+              aria-label={`Remove ${getDisplayLabel(item)}`}
+            >
+              {getDisplayLabel(item)} ×
+            </button>
+          ))}
+        </div>
+      )}
     </FieldWrapper>
   );
 }

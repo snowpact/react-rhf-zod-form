@@ -34,9 +34,7 @@ import {
   getLabelClass,
   getDescriptionClass,
   getErrorMessageClass,
-  getButtonClass,
-  getArrayContainerClass,
-  getArrayItemClass,
+  getChipClass,
   resetStylesRegistry,
   type FormStyles,
 } from './stylesRegistry';
@@ -334,9 +332,7 @@ export {
   getLabelClass,
   getDescriptionClass,
   getErrorMessageClass,
-  getButtonClass,
-  getArrayContainerClass,
-  getArrayItemClass,
+  getChipClass,
   resetStylesRegistry,
   type FormStyles,
 };
