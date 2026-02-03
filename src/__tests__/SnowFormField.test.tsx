@@ -655,6 +655,44 @@ describe('SnowFormField', () => {
       expect(screen.getByText('Custom: ["a","b"]')).toBeInTheDocument();
     });
 
+    it('should use custom type override and bypass ArrayFieldRenderer', () => {
+      // Register a custom component for 'media-library' type
+      registerComponent('media-library' as 'text', ({ value, onChange, componentProps }) => (
+        <div data-testid="media-library-component">
+          <span data-testid="media-value">{JSON.stringify(value)}</span>
+          <button
+            type="button"
+            onClick={() => onChange(['url1', 'url2'] as unknown as string)}
+            data-testid="media-select"
+          >
+            Select {(componentProps?.maxSelection as number) ?? 1} images
+          </button>
+        </div>
+      ));
+
+      renderSnowFormField({
+        fieldInfo: {
+          baseType: 'array',
+          isOptional: false,
+          isEmail: false,
+          arrayElementInfo: { baseType: 'string', isOptional: false, isEmail: false },
+        },
+        override: {
+          type: 'media-library' as 'text',
+          componentProps: { maxSelection: 5 },
+        },
+        defaultValue: ['existing-url'],
+      });
+
+      // Should render the custom media-library component, not ArrayFieldRenderer
+      expect(screen.getByTestId('media-library-component')).toBeInTheDocument();
+      expect(screen.getByTestId('media-value')).toHaveTextContent('["existing-url"]');
+      expect(screen.getByTestId('media-select')).toHaveTextContent('Select 5 images');
+
+      // Should NOT render the chip-based array UI
+      expect(screen.queryByRole('button', { name: /remove existing-url/i })).not.toBeInTheDocument();
+    });
+
     it('should show description for array fields', () => {
       renderSnowFormField({
         fieldInfo: {

@@ -87,8 +87,8 @@ export function SnowFormField<
     );
   }
 
-  // Array fields
-  if (fieldInfo.baseType === 'array' && fieldInfo.arrayElementInfo) {
+  // Array fields (only use ArrayFieldRenderer if no custom type override)
+  if (fieldInfo.baseType === 'array' && fieldInfo.arrayElementInfo && !override?.type) {
     return (
       <ArrayFieldRenderer
         name={name}
