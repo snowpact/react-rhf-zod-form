@@ -61,9 +61,7 @@ setupSnowForm({
   styles: {
     form: 'space-y-4',
     formItem: 'space-y-1',
-    button: 'px-2 py-1 text-sm border border-gray-300 rounded',
-    arrayContainer: 'flex flex-col gap-2',
-    arrayItem: 'flex items-center gap-2',
+    chip: 'inline-flex items-center gap-1 px-2 py-1 text-sm bg-blue-100 text-blue-800 rounded-full mr-1 mt-1',
   },
 });`;
 }
